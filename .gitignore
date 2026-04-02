@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+
+# Build caches / artifacts
+src-tauri/target/
+dist/
+build/
+out/
+
+# Local env & secrets
+.env
+.env.local
+.env.*.local
+.local-config.json
+
+# OS / editor junk
+.DS_Store
+*.swp
+*.swo
+.codex/
+
+# Local release binaries
+releases/
+*.dmg
+*.app

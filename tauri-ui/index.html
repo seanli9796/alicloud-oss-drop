@@ -1,0 +1,5543 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OSS Drop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f4f7fb;
+    --surface: #ffffff;
+    --surface2: #f6f9ff;
+    --border: #d8e1ef;
+    --border2: #bfcde2;
+    --text: #0f172a;
+    --muted: #62748e;
+    --accent: #2563eb;
+    --accent-strong: #1d4ed8;
+    --accent-soft: #eaf2ff;
+    --accent-border: #bcd2ff;
+    --focus-ring: #3b82f6;
+    --info: #0ea5e9;
+    --info-soft: #e6f7ff;
+    --info-border: #bae6fd;
+    --info-ink: #0369a1;
+    --success: #059669;
+    --success-soft: #e9fbf3;
+    --success-border: #b7e6d4;
+    --success-ink: #047857;
+    --warning: #d97706;
+    --warning-soft: #fff7e8;
+    --warning-border: #f3d8a6;
+    --warning-ink: #b45309;
+    --danger: #dc2626;
+    --danger-soft: #fff1f2;
+    --danger-border: #f6c2c7;
+    --danger-ink: #b42323;
+    --danger-strong: #b91c1c;
+    --danger-soft-border: #f3c9ce;
+    --danger-soft-border-hover: #e9aeb6;
+    --danger-soft-hover: #ffe7ea;
+    --danger-soft-ink-hover: #991b1b;
+    --progress-track: #dce8ff;
+    --red: #dc2626;
+    --green: #059669;
+    --radius: 8px;
+    --control-h: 30px;
+    --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+    --shadow-xs: 0 1px 1px rgba(15, 23, 42, 0.04);
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Manrope', sans-serif;
+    --ease-standard: cubic-bezier(.22,.61,.36,1);
+    --dur-fast: 120ms;
+    --dur-normal: 220ms;
+    --dur-slow: 320ms;
+  }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px 10px 14px;
+  }
+
+  header {
+    width: 100%;
+    max-width: 980px;
+    margin-bottom: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    border-radius: 12px;
+    padding: 6px 8px;
+    box-shadow: var(--shadow-xs);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .quick-entry {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .quick-head {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+  }
+
+  .quick-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    color: var(--muted);
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .quick-kbd-hint {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: 2px 6px;
+    border: 1px solid var(--accent-border);
+    border-radius: 999px;
+    background: var(--accent-soft);
+    color: var(--accent-strong);
+    font-family: var(--mono);
+    font-size: 9px;
+    line-height: 1;
+  }
+
+  .quick-kbd-hint kbd {
+    border: 1px solid var(--accent-border);
+    background: #ffffff;
+    border-radius: 4px;
+    padding: 1px 4px;
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--accent-strong);
+  }
+
+  .quick-box {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex: 1;
+    min-width: 0;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: #ffffff;
+    padding: 2px;
+    transition: border-color var(--dur-fast) var(--ease-standard), box-shadow var(--dur-fast) var(--ease-standard);
+  }
+
+  .quick-box:focus-within {
+    border-color: var(--focus-ring);
+    box-shadow: 0 0 0 1px var(--focus-ring);
+  }
+
+  .quick-input {
+    height: 30px;
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    background: transparent;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 0 8px;
+    outline: none;
+  }
+
+  .quick-go {
+    height: 28px;
+    width: 30px;
+    padding: 0;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: #ffffff;
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1;
+    transition: color var(--dur-fast) var(--ease-standard), border-color var(--dur-fast) var(--ease-standard), background var(--dur-fast) var(--ease-standard), transform var(--dur-fast) var(--ease-standard);
+  }
+
+  .quick-go:hover {
+    color: var(--text);
+    border-color: var(--border2);
+    background: var(--surface2);
+  }
+
+  .quick-go:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  header .meta {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+
+  .quick-right {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .lang-toggle {
+    height: 24px;
+    width: 24px;
+    min-width: 24px;
+    padding: 0;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: #ffffff;
+    color: #334155;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: border-color var(--dur-fast) var(--ease-standard), background var(--dur-fast) var(--ease-standard), color var(--dur-fast) var(--ease-standard);
+  }
+
+  .lang-toggle:hover {
+    border-color: var(--border2);
+    background: var(--surface2);
+  }
+
+  .lang-toggle svg {
+    width: 14px;
+    height: 14px;
+    display: block;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.75;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    pointer-events: none;
+  }
+
+  .quick-status {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--muted);
+    margin-left: 6px;
+    white-space: nowrap;
+    max-width: 280px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .main { width: 100%; max-width: 980px; }
+
+  .flow-strip {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 6px;
+    margin-bottom: 8px;
+  }
+
+  .flow-step {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: #ffffff;
+    min-height: 44px;
+    padding: 6px 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+    transition: border-color var(--dur-normal) var(--ease-standard), background var(--dur-normal) var(--ease-standard), box-shadow var(--dur-normal) var(--ease-standard), transform var(--dur-normal) var(--ease-standard);
+    box-shadow: var(--shadow-xs);
+    transform: translateY(0);
+  }
+
+  .flow-step-num {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--muted);
+  }
+
+  .flow-step-title {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text);
+  }
+
+  .flow-step.state-active {
+    border-color: var(--accent-border);
+    background: var(--accent-soft);
+    box-shadow: inset 0 0 0 1px var(--accent-border), var(--shadow-sm);
+    transform: translateY(-1px);
+  }
+
+  .flow-step.state-done {
+    border-color: var(--success-border);
+    background: var(--success-soft);
+    transform: translateY(0);
+  }
+
+  .flow-step.state-pending {
+    background: #ffffff;
+  }
+
+  .flow-step-note {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--muted);
+  }
+
+  .next-action {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 8px;
+    border: 1px solid var(--accent-border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    box-shadow: var(--shadow-xs);
+    padding: 5px 8px;
+    position: sticky;
+    top: 6px;
+    z-index: 6;
+    transition: box-shadow var(--dur-normal) var(--ease-standard), border-color var(--dur-normal) var(--ease-standard);
+  }
+
+  .next-action-text {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text);
+  }
+
+  .next-action-kbd {
+    margin-left: 6px;
+    color: var(--muted);
+    font-size: 9px;
+  }
+
+  #next-action-btn {
+    background: var(--accent);
+    color: #ffffff;
+    border-color: var(--accent);
+    font-weight: 500;
+    min-width: 98px;
+  }
+
+  #next-action-btn:hover:not(:disabled) {
+    background: var(--accent-strong);
+    border-color: var(--accent-strong);
+  }
+
+  #next-action-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+
+  /* Setup */
+  .setup-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.24);
+    backdrop-filter: blur(2px);
+    z-index: 42;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 10vh;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity var(--dur-normal) var(--ease-standard), visibility var(--dur-normal) var(--ease-standard);
+  }
+
+  .setup-modal.open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  #setup-panel {
+    width: min(760px, calc(100vw - 24px));
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px;
+    margin: 0;
+    box-shadow: 0 14px 34px rgba(15, 23, 42, 0.18);
+    transform: translateY(8px) scale(.985);
+    opacity: 0;
+    transition: transform var(--dur-normal) var(--ease-standard), opacity var(--dur-normal) var(--ease-standard);
+  }
+
+  .setup-modal.open #setup-panel {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+
+  .setup-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .setup-title,
+  .setup-note,
+  .setup-status {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.02em;
+  }
+
+  .setup-title {
+    color: var(--text);
+    text-transform: uppercase;
+  }
+
+  .setup-note { color: var(--muted); }
+
+  .setup-status {
+    margin-top: 14px;
+    color: var(--muted);
+  }
+
+  .command-palette {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.24);
+    backdrop-filter: blur(2px);
+    z-index: 40;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 12vh;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity var(--dur-normal) var(--ease-standard), visibility var(--dur-normal) var(--ease-standard);
+  }
+
+  .command-palette.open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .confirm-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.24);
+    backdrop-filter: blur(2px);
+    z-index: 43;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 16vh;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity var(--dur-normal) var(--ease-standard), visibility var(--dur-normal) var(--ease-standard);
+  }
+
+  .confirm-modal.open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .confirm-panel {
+    width: min(460px, calc(100vw - 24px));
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: #ffffff;
+    box-shadow: 0 14px 34px rgba(15, 23, 42, 0.18);
+    padding: 10px;
+    transform: translateY(8px) scale(.985);
+    opacity: 0;
+    transition: transform var(--dur-normal) var(--ease-standard), opacity var(--dur-normal) var(--ease-standard);
+  }
+
+  .confirm-modal.open .confirm-panel {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+
+  .confirm-title {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--danger);
+    margin-bottom: 6px;
+  }
+
+  .confirm-body {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text);
+    line-height: 1.5;
+    margin-bottom: 10px;
+  }
+
+  .confirm-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 6px;
+  }
+
+  #btn-reset-confirm {
+    background: var(--danger);
+    color: #ffffff;
+    border-color: var(--danger);
+    font-weight: 500;
+  }
+
+  #btn-reset-confirm:hover:not(:disabled) {
+    background: var(--danger-strong);
+    border-color: var(--danger-strong);
+  }
+
+  .command-panel {
+    width: min(560px, calc(100vw - 24px));
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: #ffffff;
+    box-shadow: 0 14px 34px rgba(15, 23, 42, 0.18);
+    overflow: hidden;
+    transform: translateY(8px) scale(.985);
+    opacity: 0;
+    transition: transform var(--dur-normal) var(--ease-standard), opacity var(--dur-normal) var(--ease-standard);
+  }
+
+  .command-palette.open .command-panel {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+
+  .command-head {
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text);
+  }
+
+  .command-head span {
+    color: var(--muted);
+    font-size: 9px;
+  }
+
+  .command-list {
+    display: flex;
+    flex-direction: column;
+    max-height: 320px;
+    overflow: auto;
+    padding: 4px;
+    gap: 2px;
+  }
+
+  .command-search-wrap {
+    padding: 6px 8px;
+    border-bottom: 1px solid var(--border);
+    background: #ffffff;
+  }
+
+  .command-search {
+    width: 100%;
+    height: 30px;
+    flex: 1;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: #ffffff;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 0 8px;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+
+  .command-search:focus {
+    border-color: var(--focus-ring);
+    box-shadow: 0 0 0 1px var(--focus-ring);
+  }
+
+  .command-search-status {
+    margin-top: 4px;
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--muted);
+    min-height: 12px;
+  }
+
+  .command-item {
+    width: 100%;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    background: #ffffff;
+    color: var(--text);
+    min-height: 42px;
+    padding: 6px 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 2px;
+    font-family: var(--mono);
+    font-size: 10px;
+    cursor: pointer;
+    text-align: left;
+  }
+
+  .command-item:hover,
+  .command-item.active {
+    border-color: var(--accent-border);
+    background: var(--accent-soft);
+  }
+
+  .command-item.suggested {
+    border-color: var(--accent-border);
+    background: var(--accent-soft);
+    box-shadow: inset 0 0 0 1px var(--accent-border);
+  }
+
+  .command-item-title {
+    color: var(--text);
+    font-size: 10px;
+  }
+
+  .command-item-note {
+    color: var(--muted);
+    font-size: 9px;
+  }
+
+  .setup-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+
+  .setup-field {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .setup-field.full {
+    grid-column: 1 / -1;
+  }
+
+  .setup-field label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+
+  .setup-field input {
+    height: var(--control-h);
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 0 8px;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+
+  .setup-field input:focus {
+    border-color: var(--focus-ring);
+    box-shadow: 0 0 0 1px var(--focus-ring);
+  }
+
+  .setup-actions {
+    margin-top: 8px;
+    display: flex;
+    gap: 4px;
+    align-items: center;
+  }
+
+  #btn-cancel-setup,
+  #btn-reset-app {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .setup-field-help {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    line-height: 1.45;
+  }
+
+  button {
+    height: var(--control-h);
+    padding: 0 9px;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.01em;
+    text-transform: none;
+    cursor: pointer;
+    transition: transform var(--dur-fast) var(--ease-standard), border-color var(--dur-fast) var(--ease-standard), background var(--dur-fast) var(--ease-standard), color var(--dur-fast) var(--ease-standard), opacity var(--dur-fast) var(--ease-standard), box-shadow var(--dur-fast) var(--ease-standard);
+  }
+
+  button:active {
+    transform: scale(0.985);
+  }
+
+  #btn-save-setup {
+    background: var(--accent);
+    color: #ffffff;
+    border-color: var(--accent);
+    font-weight: 500;
+  }
+
+  #btn-save-setup:hover {
+    background: var(--accent-strong);
+    border-color: var(--accent-strong);
+  }
+
+  .btn-secondary {
+    background: #ffffff;
+    color: var(--muted);
+    border-color: var(--border);
+  }
+
+  .btn-secondary:hover {
+    color: var(--text);
+    border-color: var(--border2);
+    background: var(--surface2);
+  }
+
+  .btn-danger-soft {
+    border-color: var(--danger-soft-border);
+    color: var(--danger);
+    background: var(--danger-soft);
+  }
+
+  .btn-danger-soft:hover {
+    border-color: var(--danger-soft-border-hover);
+    background: var(--danger-soft-hover);
+    color: var(--danger-soft-ink-hover);
+  }
+
+  #uploader {
+    display: none;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .workspace {
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: start;
+    gap: 8px;
+  }
+
+  .side-col,
+  .main-col {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .target-section,
+  .execute-card,
+  #log-section {
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    box-shadow: var(--shadow-xs);
+  }
+
+  .target-section,
+  .execute-card {
+    padding: 8px;
+  }
+
+  .target-section,
+  #log-section {
+    background: var(--surface2);
+  }
+
+  .target-section {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .target-main-row {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+  }
+
+  .target-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .target-title {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text);
+    letter-spacing: .02em;
+    text-transform: uppercase;
+  }
+
+  .target-sub {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .bucket-info,
+  .path-panel {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .path-panel {
+    flex: 1;
+    min-width: 0;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--surface2);
+    padding: 6px;
+  }
+
+  .bucket-info {
+    min-width: 320px;
+    flex: 0 0 340px;
+  }
+
+  .card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+
+  .card-title {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: .02em;
+    color: var(--text);
+    text-transform: uppercase;
+  }
+
+  .card-sub {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .card-status {
+    font-family: var(--mono);
+    font-size: 9px;
+    padding: 2px 6px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: #f8fafc;
+    color: var(--muted);
+    white-space: nowrap;
+    max-width: 240px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .card-status.state-loading {
+    border-color: var(--info-border);
+    background: var(--info-soft);
+    color: var(--info-ink);
+  }
+
+  .card-status.state-ready {
+    border-color: var(--success-border);
+    background: var(--success-soft);
+    color: var(--success-ink);
+  }
+
+  .card-status.state-error {
+    border-color: var(--danger-border);
+    background: var(--danger-soft);
+    color: var(--danger-ink);
+  }
+
+  .card-status.state-partial {
+    border-color: var(--warning-border);
+    background: var(--warning-soft);
+    color: var(--warning-ink);
+  }
+
+  .bucket-row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .bucket-switch-trigger {
+    width: auto;
+    flex: 1;
+    min-width: 240px;
+    justify-content: flex-start;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .bucket-actions {
+    display: flex;
+    gap: 4px;
+    margin-left: 0;
+  }
+
+  .bucket-inline {
+    display: flex;
+    gap: 4px;
+    align-items: stretch;
+    flex-wrap: wrap;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    background: var(--surface2);
+    padding: 0 6px;
+    margin-top: 0;
+    max-height: 0;
+    opacity: 0;
+    transform: translateY(-6px);
+    overflow: hidden;
+    pointer-events: none;
+    transition: max-height var(--dur-normal) var(--ease-standard), opacity var(--dur-normal) var(--ease-standard), transform var(--dur-normal) var(--ease-standard), padding var(--dur-fast) var(--ease-standard), margin-top var(--dur-fast) var(--ease-standard), border-color var(--dur-fast) var(--ease-standard);
+  }
+
+  .bucket-inline.open {
+    border-color: var(--border);
+    padding: 6px;
+    margin-top: 4px;
+    max-height: 280px;
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  .bucket-status {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+  }
+
+  .bucket-help {
+    width: 100%;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    line-height: 1.45;
+  }
+
+  .bucket-picker {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    flex: 1;
+    min-width: 240px;
+  }
+
+  .selector-trigger {
+    height: var(--control-h);
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: #ffffff;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 11px;
+    text-align: left;
+    padding: 0 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: border-color var(--dur-fast) var(--ease-standard), box-shadow var(--dur-fast) var(--ease-standard), background var(--dur-fast) var(--ease-standard), color var(--dur-fast) var(--ease-standard), transform var(--dur-fast) var(--ease-standard);
+  }
+
+  .selector-trigger::after {
+    content: "⌄";
+    color: var(--muted);
+    font-size: 11px;
+    margin-left: 6px;
+    transform: translateY(-1px);
+    transition: transform var(--dur-fast) var(--ease-standard);
+  }
+
+  .selector-trigger.open {
+    border-color: var(--focus-ring);
+    box-shadow: 0 0 0 1px var(--focus-ring);
+  }
+
+  .selector-trigger.open::after {
+    transform: rotate(180deg);
+  }
+
+  .picker-dropdown {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    margin-top: 0;
+    max-height: 0;
+    opacity: 0;
+    transform: translateY(-4px);
+    pointer-events: none;
+    overflow: hidden;
+    transition: max-height var(--dur-normal) var(--ease-standard), opacity var(--dur-normal) var(--ease-standard), transform var(--dur-normal) var(--ease-standard), margin-top var(--dur-fast) var(--ease-standard);
+  }
+
+  .picker-dropdown.open {
+    margin-top: 2px;
+    max-height: 320px;
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  .bucket-list,
+  .path-list {
+    display: flex;
+    flex-direction: column;
+    max-height: 132px;
+    overflow-y: auto;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: #ffffff;
+    padding: 2px;
+  }
+
+  .bucket-search {
+    height: var(--control-h);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: #ffffff;
+    padding: 0 8px;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 11px;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+
+  .bucket-search:focus {
+    border-color: var(--focus-ring);
+    box-shadow: 0 0 0 1px var(--focus-ring);
+  }
+
+  .bucket-list-state {
+    padding: 6px;
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 10px;
+    line-height: 1.45;
+  }
+
+  .bucket-option,
+  .path-option {
+    width: 100%;
+    padding: 6px 8px;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    margin-bottom: 2px;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 10px;
+    text-align: left;
+    cursor: pointer;
+    transition: background var(--dur-fast) var(--ease-standard), color var(--dur-fast) var(--ease-standard), box-shadow var(--dur-fast) var(--ease-standard), transform var(--dur-fast) var(--ease-standard);
+  }
+
+  .bucket-option:last-child,
+  .path-option:last-child {
+    margin-bottom: 0;
+  }
+
+  .bucket-option:hover,
+  .path-option:hover {
+    background: var(--accent-soft);
+    transform: translateY(-1px);
+  }
+
+  .bucket-option.active,
+  .path-option.active {
+    color: var(--accent-strong);
+    background: var(--accent-soft);
+    box-shadow: inset 0 0 0 1px var(--accent-border);
+    font-weight: 500;
+  }
+
+  .bucket-option-meta,
+  .path-option-meta {
+    display: block;
+    margin-top: 1px;
+    color: var(--muted);
+    font-size: 9px;
+  }
+
+  .bucket-option.active .bucket-option-meta,
+  .path-option.active .path-option-meta {
+    color: var(--accent-strong);
+  }
+
+  .path-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 6px;
+  }
+
+  .path-title {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text);
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+
+  .path-state,
+  .path-meta,
+  .path-help,
+  .path-preview {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+  }
+
+  .path-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    align-items: stretch;
+  }
+
+  .path-bar-row {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .path-manual-row {
+    display: flex;
+    margin-top: 4px;
+    max-height: 0;
+    opacity: 0;
+    transform: translateY(-4px);
+    overflow: hidden;
+    pointer-events: none;
+    transition: max-height var(--dur-normal) var(--ease-standard), opacity var(--dur-normal) var(--ease-standard), transform var(--dur-normal) var(--ease-standard);
+  }
+
+  .path-manual-row.open {
+    max-height: 46px;
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  .path-top-controls {
+    display: flex;
+    gap: 3px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .path-picker {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .path-controls {
+    display: flex;
+    gap: 3px;
+    align-items: center;
+  }
+
+  .path-search,
+  .path-input {
+    height: var(--control-h);
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 0 8px;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+
+  .path-search {
+    flex: 1;
+  }
+
+  .path-input {
+    width: auto;
+    min-width: 220px;
+    flex: 1;
+  }
+
+  .btn-secondary.active {
+    border-color: var(--accent-border);
+    background: var(--accent-soft);
+    color: var(--accent-strong);
+  }
+
+  .path-search:focus,
+  .path-input:focus {
+    border-color: var(--focus-ring);
+    box-shadow: 0 0 0 1px var(--focus-ring);
+  }
+
+  .path-preview {
+    margin-top: 4px;
+    color: var(--text);
+  }
+
+  .path-meta {
+    margin-top: 3px;
+  }
+
+  .path-help {
+    margin-top: 2px;
+    line-height: 1.45;
+  }
+
+  .execute-card {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-height: 300px;
+  }
+
+  .execute-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .execute-title {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text);
+    text-transform: uppercase;
+  }
+
+  .execute-sub {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--muted);
+  }
+
+  /* Drop zone */
+  #drop-zone {
+    border: 1px dashed var(--border2);
+    border-radius: var(--radius);
+    background: #ffffff;
+    padding: 10px 10px;
+    text-align: center;
+    cursor: pointer;
+    position: relative;
+    transition: border-color var(--dur-normal) var(--ease-standard), background var(--dur-normal) var(--ease-standard), transform var(--dur-normal) var(--ease-standard), box-shadow var(--dur-normal) var(--ease-standard);
+    margin-bottom: 0;
+  }
+
+  #drop-zone:hover, #drop-zone.drag { 
+    border-color: var(--accent); 
+    background: var(--accent-soft);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(37, 99, 235, 0.14);
+  }
+
+  #drop-zone input {
+    display: none;
+  }
+
+  .drop-icon {
+    font-family: var(--mono);
+    font-size: 15px;
+    color: #8ba2be;
+    margin-bottom: 4px;
+    transition: color 0.15s;
+  }
+
+  #drop-zone:hover .drop-icon, #drop-zone.drag .drop-icon { color: var(--accent-strong); }
+
+  .drop-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+
+  /* File list */
+  #file-list {
+    margin-bottom: 0;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: #ffffff;
+    overflow: auto;
+    max-height: 150px;
+    min-height: 30px;
+  }
+
+  .file-head,
+  .file-item {
+    display: grid;
+    grid-template-columns: 28px minmax(0, 1fr) 72px 38px 22px;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .file-head {
+    padding: 5px 8px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface2);
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+
+  .file-item {
+    padding: 6px 8px;
+    background: transparent;
+    border-bottom: 1px solid #e8eff8;
+    font-family: var(--mono);
+    font-size: 10px;
+    transition: background var(--dur-fast) var(--ease-standard), transform var(--dur-fast) var(--ease-standard);
+  }
+
+  .file-item:last-child {
+    border-bottom: none;
+  }
+
+  .file-item:hover { background: var(--accent-soft); transform: translateY(-1px); }
+
+  .file-empty {
+    padding: 10px 8px;
+    text-align: center;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+  }
+
+  .file-num {
+    color: var(--muted);
+    font-size: 9px;
+  }
+
+  .file-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--text);
+  }
+
+  .file-size { color: var(--muted); text-align: right; }
+
+  .file-status {
+    text-align: center;
+    font-size: 12px;
+  }
+
+  .file-remove {
+    cursor: pointer;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1;
+    padding: 0 2px;
+    transition: color 0.1s;
+  }
+
+  .file-remove:hover { color: var(--red); }
+
+  /* Upload bar */
+  .upload-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 0;
+    padding: 6px 8px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: #ffffff;
+    position: sticky;
+    bottom: 0;
+    z-index: 2;
+    transition: border-color var(--dur-fast) var(--ease-standard), box-shadow var(--dur-fast) var(--ease-standard), background var(--dur-fast) var(--ease-standard);
+  }
+
+  #btn-upload {
+    height: var(--control-h);
+    padding: 0 12px;
+    background: var(--accent);
+    color: #ffffff;
+    border-color: var(--accent);
+    font-size: 11px;
+    font-weight: 500;
+    margin-left: auto;
+  }
+
+  #btn-upload:hover:not(:disabled) {
+    background: var(--accent-strong);
+    border-color: var(--accent-strong);
+  }
+
+  #btn-upload:disabled {
+    opacity: 0.25;
+    cursor: not-allowed;
+  }
+
+  #upload-status {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    padding-left: 0;
+    letter-spacing: 0.04em;
+  }
+
+  /* Progress */
+  #progress-track {
+    height: 3px;
+    background: var(--progress-track);
+    border-radius: 999px;
+    margin-top: 6px;
+    display: none;
+    overflow: hidden;
+  }
+
+  #progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--info), var(--accent));
+    width: 100%;
+    transform-origin: left center;
+    transform: scaleX(0);
+    transition: transform var(--dur-normal) var(--ease-standard);
+    will-change: transform;
+  }
+
+  /* Log */
+  #log-section {
+    margin-top: 0;
+    overflow: hidden;
+    transition: border-color var(--dur-normal) var(--ease-standard), box-shadow var(--dur-normal) var(--ease-standard);
+  }
+
+  .log-toggle {
+    width: 100%;
+    border: 0;
+    border-bottom: 1px solid var(--border);
+    border-radius: 0;
+    background: #f7f9fc;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 8px;
+    height: 30px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+    box-shadow: none;
+  }
+
+  .log-body {
+    display: block;
+    max-height: 420px;
+    opacity: 1;
+    overflow: hidden;
+    transition: max-height var(--dur-slow) var(--ease-standard), opacity var(--dur-normal) var(--ease-standard);
+  }
+
+  #log-section.collapsed .log-body {
+    max-height: 0;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .log-header {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 6px 8px;
+    border-bottom: 1px solid var(--border);
+    background: #f7f9fc;
+  }
+
+  .log-summary {
+    border-bottom: 1px solid var(--border);
+    padding: 6px 8px;
+    background: var(--surface2);
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+  }
+
+  .log-group {
+    border-bottom: 1px solid var(--border);
+  }
+
+  .log-group:last-child {
+    border-bottom: none;
+  }
+
+  .log-group-title {
+    list-style: none;
+    padding: 6px 8px;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text);
+    background: #ffffff;
+    cursor: default;
+  }
+
+  .log-group > summary {
+    cursor: pointer;
+  }
+
+  .log-group > summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .log-list-body {
+    max-height: 156px;
+    overflow: auto;
+  }
+
+  .log-item {
+    display: grid;
+    grid-template-columns: 18px minmax(0, 1fr) 110px minmax(0, 1fr) 46px;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 8px;
+    border-bottom: 1px solid #e8eff8;
+    font-family: var(--mono);
+    font-size: 10px;
+  }
+
+  .log-sym { text-align: center; }
+  .log-ok .log-sym { color: var(--green); }
+  .log-err .log-sym { color: var(--red); }
+
+  .log-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .log-ok .log-name { color: var(--text); }
+  .log-err .log-name { color: var(--red); }
+
+  .log-key {
+    color: var(--muted);
+    font-size: 9px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .log-text {
+    color: var(--red);
+    font-size: 9px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .log-url {
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 9px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+
+  .log-url:hover { color: var(--accent); }
+
+  .copy-btn {
+    height: 20px;
+    padding: 0 6px;
+    background: #ffffff;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 9px;
+    transition: color 0.1s, border-color 0.1s;
+    white-space: nowrap;
+    border-radius: 6px;
+  }
+
+  .log-item .copy-btn {
+    justify-self: end;
+  }
+
+  .log-item.log-err .copy-btn {
+    display: none;
+  }
+
+  .copy-btn:hover { color: var(--text); border-color: var(--border2); }
+
+  @media (max-width: 720px) {
+    .flow-strip {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .workspace {
+      grid-template-columns: 1fr;
+    }
+
+    .target-main-row {
+      flex-direction: column;
+    }
+
+    .bucket-info,
+    .path-panel {
+      width: 100%;
+      min-width: 0;
+      flex: 1;
+    }
+
+    header,
+    .bucket-row,
+    .path-header,
+    .setup-head,
+    .upload-bar {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .quick-entry {
+      width: 100%;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 4px;
+    }
+
+    .quick-head {
+      width: 100%;
+      justify-content: space-between;
+    }
+
+    .quick-status {
+      margin-left: 0;
+      max-width: 100%;
+      white-space: normal;
+    }
+
+    header .meta {
+      white-space: normal;
+    }
+
+    .quick-right {
+      width: 100%;
+      justify-content: space-between;
+    }
+
+    #uploader {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .setup-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .bucket-actions {
+      margin-left: 0;
+      width: 100%;
+    }
+
+    .bucket-actions .btn-secondary {
+      flex: 1;
+    }
+
+    .bucket-switch-trigger,
+    #path-picker-trigger,
+    #path-manual-btn,
+    .path-input {
+      width: 100%;
+      min-width: 0;
+      flex: 1 0 100%;
+    }
+
+    .log-item {
+      grid-template-columns: 20px minmax(0, 1fr) minmax(0, 1fr);
+    }
+
+    .log-item > :nth-child(3),
+    .log-item > :nth-child(5) {
+      display: none;
+    }
+  }
+
+  @keyframes pulse { 0%,100% { opacity:1 } 50% { opacity:0.4 } }
+  @keyframes quickFlash {
+    0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.28); }
+    100% { box-shadow: 0 0 0 8px rgba(37, 99, 235, 0); }
+  }
+  .quick-box.flash-success {
+    animation: quickFlash var(--dur-slow) var(--ease-standard) 1;
+  }
+  .uploading { animation: pulse 1s infinite; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation: none !important;
+      transition-duration: 0.01ms !important;
+      transition-delay: 0ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="quick-entry">
+    <div class="quick-head">
+      <span class="quick-label" id="quick-label">快捷操作</span>
+      <span class="quick-kbd-hint" id="quick-kbd-hint" aria-label="快捷键提示">
+        <kbd>⌘K</kbd>
+        <span>/</span>
+        <kbd>Ctrl+K</kbd>
+      </span>
+    </div>
+    <div class="quick-box">
+      <input class="quick-input" id="quick-link-input" type="text" placeholder="粘贴 OSS 文件链接，自动定位 Bucket/Region/路径" onkeydown="handleQuickLinkKeydown(event)" autocapitalize="off" autocorrect="off" spellcheck="false" autocomplete="off">
+      <button class="quick-go" type="button" id="quick-link-go" onclick="applyQuickLinkFromInput()" aria-label="前往">↗</button>
+    </div>
+    <span class="quick-status" id="quick-status"></span>
+  </div>
+  <div class="quick-right">
+    <button class="lang-toggle" id="lang-toggle" type="button" onclick="toggleLanguage()" title="Switch language" aria-label="Switch language">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="12" cy="12" r="8.5"></circle>
+        <path d="M3.5 12h17"></path>
+        <path d="M12 3.5c2.3 2.2 3.6 5.2 3.6 8.5S14.3 18.3 12 20.5c-2.3-2.2-3.6-5.2-3.6-8.5S9.7 5.7 12 3.5z"></path>
+      </svg>
+    </button>
+    <span class="meta" id="header-meta">正在连接...</span>
+  </div>
+</header>
+
+<div class="main">
+  <div id="setup-modal" class="setup-modal">
+    <div id="setup-panel">
+      <div class="setup-head">
+        <div class="setup-title" id="setup-title">首次配置</div>
+        <div class="setup-note" id="setup-note">首次进入填写一次，本地保存，后续自动读取</div>
+      </div>
+      <div class="setup-grid">
+        <div class="setup-field">
+          <label>Access Key ID</label>
+          <input id="setup-ak" type="text" placeholder="输入 AccessKeyId" oninput="handleSetupCredentialInput()" autocapitalize="off" autocorrect="off" spellcheck="false" autocomplete="off">
+        </div>
+        <div class="setup-field">
+          <label>Access Key Secret</label>
+          <input id="setup-sk" type="password" placeholder="输入 AccessKeySecret" oninput="handleSetupCredentialInput()" autocapitalize="off" autocorrect="off" spellcheck="false" autocomplete="off">
+        </div>
+        <div class="setup-field">
+          <label>Bucket</label>
+          <div class="bucket-picker">
+            <button type="button" class="selector-trigger" id="setup-bucket-trigger" onclick="toggleSetupBucketPicker()">选择 Bucket</button>
+            <div class="picker-dropdown" id="setup-bucket-dropdown">
+              <input class="bucket-search" type="text" id="setup-bucket-search" placeholder="搜索 Bucket / Region" oninput="handleBucketSearchInput('setup')" autocapitalize="off" autocorrect="off" spellcheck="false" autocomplete="off">
+              <div class="bucket-list" id="setup-bucket-list"></div>
+            </div>
+            <div class="setup-field-help" id="setup-bucket-selected">当前未选择 Bucket</div>
+          </div>
+          <div class="setup-field-help" id="setup-bucket-help">填完 AK / SK / Region 后，会加载全量 Bucket 列表；可先搜索再点击选择。</div>
+        </div>
+        <div class="setup-field">
+          <label>Region</label>
+          <input id="setup-region" type="text" placeholder="例如 oss-cn-hongkong" oninput="handleSetupCredentialInput()" autocapitalize="off" autocorrect="off" spellcheck="false" autocomplete="off">
+        </div>
+      </div>
+      <div class="setup-actions">
+        <button id="btn-save-setup" onclick="saveSetup()">保存配置</button>
+        <button class="btn-secondary" id="btn-cancel-setup" onclick="hideSetup()" style="display:none">取消</button>
+        <button class="btn-secondary btn-danger-soft" id="btn-reset-app" onclick="openResetConfirm()" style="display:none">初始化应用</button>
+      </div>
+      <div class="setup-status" id="setup-status"></div>
+    </div>
+  </div>
+
+  <div class="confirm-modal" id="reset-confirm-modal">
+    <div class="confirm-panel" id="reset-confirm-panel">
+      <div class="confirm-title" id="reset-confirm-title">初始化应用</div>
+      <div class="confirm-body" id="reset-confirm-body">将清空本地 AK/SK/Bucket/路径 配置，初始化后需重新填写。</div>
+      <div class="confirm-actions">
+        <button class="btn-secondary" id="btn-reset-cancel" type="button" onclick="setResetConfirmOpen(false)">取消</button>
+        <button id="btn-reset-confirm" type="button" onclick="resetAppConfigWithConfirm()">确认初始化</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="uploader" style="display:none">
+    <div class="flow-strip" id="flow-strip">
+      <div class="flow-step state-active" id="flow-step-1">
+        <span class="flow-step-num">STEP 1</span>
+        <span class="flow-step-title" id="flow-step-title-1">连接 Bucket</span>
+        <span class="flow-step-note" id="flow-step-note-1">确认目标 Bucket 与 Region</span>
+      </div>
+      <div class="flow-step state-pending" id="flow-step-2">
+        <span class="flow-step-num">STEP 2</span>
+        <span class="flow-step-title" id="flow-step-title-2">选择上传路径</span>
+        <span class="flow-step-note" id="flow-step-note-2">从列表选或手动输入</span>
+      </div>
+      <div class="flow-step state-pending" id="flow-step-3">
+        <span class="flow-step-num">STEP 3</span>
+        <span class="flow-step-title" id="flow-step-title-3">添加文件</span>
+        <span class="flow-step-note" id="flow-step-note-3">拖拽或点击加入队列</span>
+      </div>
+      <div class="flow-step state-pending" id="flow-step-4">
+        <span class="flow-step-num">STEP 4</span>
+        <span class="flow-step-title" id="flow-step-title-4">执行上传</span>
+        <span class="flow-step-note" id="flow-step-note-4">查看进度与结果记录</span>
+      </div>
+    </div>
+    <div class="next-action" id="next-action">
+      <span class="next-action-text" id="next-action-text">下一步：先确认 Bucket 目标</span>
+      <button type="button" id="next-action-btn" onclick="runNextAction()">选择 Bucket</button>
+    </div>
+    <div class="workspace">
+      <div class="target-section">
+        <div class="target-head">
+          <div>
+            <div class="target-title" id="target-title">目标设置</div>
+            <div class="target-sub" id="target-sub">横向管理 Bucket 与上传路径，选中后自动保存</div>
+          </div>
+          <span class="card-status state-ready" id="target-card-status">就绪</span>
+        </div>
+        <div class="target-main-row">
+          <div class="bucket-info" id="bucket-info"></div>
+          <div class="path-panel">
+            <div class="path-bar-row">
+              <button type="button" class="selector-trigger" id="path-picker-trigger" onclick="togglePathPicker()">从已有路径选择</button>
+              <button class="btn-secondary" type="button" id="path-manual-btn" onclick="toggleManualPathMode()">手动输入模式</button>
+              <button class="btn-secondary" type="button" id="path-refresh-btn" onclick="manualRefreshPrefixes()">刷新路径</button>
+              <div class="path-state card-status state-loading" id="path-state">读取中</div>
+            </div>
+            <div class="path-manual-row" id="path-manual-row">
+              <input class="path-input" type="text" id="path-input" placeholder="例如 website/banner/" oninput="handlePathInputChange()" autocapitalize="off" autocorrect="off" spellcheck="false" autocomplete="off">
+            </div>
+            <div class="picker-dropdown" id="path-picker-dropdown">
+              <div class="path-controls">
+                <input class="path-search" type="text" id="path-search" placeholder="搜索已有路径（不区分大小写）" oninput="handlePathSearchInput()" autocapitalize="off" autocorrect="off" spellcheck="false" autocomplete="off">
+              </div>
+              <div class="path-list" id="path-list"></div>
+            </div>
+            <div class="path-meta" id="path-meta">等待读取路径...</div>
+            <div class="path-preview" id="path-preview">当前上传到：website/</div>
+            <div class="path-help" id="path-help">可从已有目录中选择，也可手动输入新路径（空即根目录）。</div>
+          </div>
+        </div>
+      </div>
+
+      <section class="main-col">
+        <div class="execute-card">
+          <div class="execute-head">
+            <div>
+              <div class="execute-title" id="execute-title">上传执行区</div>
+              <div class="execute-sub" id="execute-sub">先确认 Bucket/路径，再添加文件并上传</div>
+            </div>
+            <span class="card-status state-loading" id="upload-card-status">等待文件</span>
+          </div>
+
+          <div id="drop-zone">
+            <input type="file" id="file-input" multiple onchange="handleFiles(this.files)">
+            <div class="drop-icon">↑</div>
+            <div class="drop-label" id="drop-label">拖拽文件 / 点击选择</div>
+          </div>
+
+          <div id="file-list"></div>
+
+          <div class="upload-bar">
+            <span id="upload-status"></span>
+            <button id="btn-upload" disabled onclick="startUpload()">开始上传</button>
+          </div>
+
+          <div id="progress-track"><div id="progress-fill"></div></div>
+        </div>
+        <div id="log-section" class="collapsed">
+          <button type="button" class="log-toggle" onclick="toggleLogSection()">
+            <span id="log-title">上传记录</span>
+            <span id="log-toggle-text">展开</span>
+          </button>
+          <div class="log-body">
+            <div class="log-summary" id="log-summary">
+              暂无上传记录
+            </div>
+            <details class="log-group log-success-group" id="log-success-group" open>
+              <summary class="log-group-title" id="log-success-summary">成功项（0）</summary>
+              <div id="log-list-success" class="log-list-body"></div>
+            </details>
+            <details class="log-group log-error-group" id="log-error-group">
+              <summary class="log-group-title" id="log-error-summary">失败项（0）</summary>
+              <div id="log-list-errors" class="log-list-body"></div>
+            </details>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<div class="command-palette" id="command-palette">
+  <div class="command-panel">
+    <div class="command-head">
+      <span id="command-head-title">快捷操作</span>
+      <span id="command-head-kbd">Cmd/Ctrl + K</span>
+    </div>
+    <div class="command-search-wrap">
+      <input class="command-search" id="command-search" type="text" placeholder="搜索操作或粘贴 OSS 链接" oninput="handleCommandSearchInput()" autocapitalize="off" autocorrect="off" spellcheck="false" autocomplete="off">
+      <div class="command-search-status" id="command-search-status"></div>
+    </div>
+    <div class="command-list" id="command-list"></div>
+  </div>
+</div>
+
+<script>
+let files = [];
+let config = {};
+let knownPrefixes = [];
+let knownBuckets = [];
+let setupBucketRefreshTimer = null;
+let setupBucketPreviewRequestId = 0;
+let setupBucketsLoading = false;
+let setupBucketsError = '';
+let inlineBucketsLoading = false;
+let inlineBucketsError = '';
+let selectedSetupBucketName = '';
+let selectedInlineBucketName = '';
+let setupBucketSearchQuery = '';
+let inlineBucketSearchQuery = '';
+let prefixesLoading = false;
+let prefixesError = '';
+let bucketSaving = false;
+let pathSaveRequestId = 0;
+let setupModalOpen = false;
+let setupModalLocked = false;
+let resetConfirmOpen = false;
+let setupBucketPickerOpen = false;
+let pathPickerOpen = false;
+let manualPathMode = false;
+let isUploading = false;
+let logExpanded = false;
+let currentFlowStep = 1;
+let nextActionKind = 'bucket';
+let uploadLogs = [];
+let commandPaletteOpen = false;
+let commandPaletteIndex = 0;
+let commandPaletteQuery = '';
+let commandPaletteVisibleActions = [];
+let commandUsageMap = {};
+let recentPathBookmarks = [];
+let quickStatusTimer = null;
+let commandStatusTimer = null;
+let tauriDropListenerReady = false;
+let prefixLoadStats = {
+  visited: 0,
+  fallbackHits: 0,
+  failedParents: [],
+  truncated: false,
+};
+const LANG_STORAGE_KEY = 'oss-drop-lang-v1';
+const I18N = {
+  zh: {
+    'common.requestFailed': '请求失败',
+    'common.retry': '请重试',
+    'lang.toggle': 'EN',
+    'lang.toggle.hint': '切换到 English',
+    'quick.label': '快捷操作',
+    'quick.hint.aria': '快捷键提示',
+    'quick.input.placeholder': '粘贴 OSS 文件链接，自动定位 Bucket/Region/路径',
+    'quick.go.aria': '前往',
+    'header.connecting': '正在连接...',
+    'header.setup': '首次配置 OSS',
+    'header.noBucket': '未选择 Bucket · {{region}}',
+    'setup.title': '首次配置',
+    'setup.note': '首次进入填写一次，本地保存，后续自动读取',
+    'setup.ak.placeholder': '输入 AccessKeyId',
+    'setup.sk.placeholder': '输入 AccessKeySecret',
+    'setup.bucket.trigger': '选择 Bucket',
+    'setup.bucket.search.placeholder': '搜索 Bucket / Region',
+    'setup.bucket.unselected': '当前未选择 Bucket',
+    'setup.bucket.help.default': '填完 AK / SK 后会加载全量 Bucket 列表；Bucket 可留空先保存，后续到主页面再选。',
+    'setup.region.placeholder': '例如 oss-cn-hongkong',
+    'setup.save': '保存配置',
+    'setup.cancel': '取消',
+    'setup.reset': '初始化应用',
+    'setup.reset.title': '初始化应用',
+    'setup.reset.body': '将清空本地 AK/SK/Bucket/路径 配置，初始化后需重新填写。',
+    'setup.reset.cancel': '取消',
+    'setup.reset.confirm': '确认初始化',
+    'setup.reset.running': '正在初始化应用...',
+    'setup.reset.done': '已初始化应用，请重新填写 AK/SK。',
+    'setup.reset.failed': '初始化应用失败',
+    'setup.firstRunPrompt': '首次进入请先填写 OSS 配置。',
+    'setup.required': '首次配置时 Access Key ID 和 Access Key Secret 必填。',
+    'setup.saving': '正在保存本地配置...',
+    'setup.saved': '配置已保存到本地。',
+    'setup.saveFailed': '保存配置失败',
+    'flow.title.1': '连接 Bucket',
+    'flow.note.1': '确认目标 Bucket 与 Region',
+    'flow.title.2': '选择上传路径',
+    'flow.note.2': '从列表选或手动输入',
+    'flow.title.3': '添加文件',
+    'flow.note.3': '拖拽或点击加入队列',
+    'flow.title.4': '执行上传',
+    'flow.note.4': '查看进度与结果记录',
+    'next.kbd': '⌘K 快捷',
+    'next.text.setup': '当前动作：完成首次配置',
+    'next.text.bucket': '当前动作：确认 Bucket',
+    'next.text.path': '当前动作：确认路径',
+    'next.text.files': '当前动作：添加文件',
+    'next.text.uploading': '当前动作：查看上传结果',
+    'next.text.upload': '当前动作：开始上传',
+    'next.btn.openSetup': '打开配置',
+    'next.btn.selectBucket': '选择 Bucket',
+    'next.btn.selectPath': '选择路径',
+    'next.btn.addFiles': '添加文件',
+    'next.btn.viewLogs': '查看记录',
+    'next.btn.startUpload': '开始上传',
+    'target.title': '目标设置',
+    'target.sub.default': '横向管理 Bucket 与上传路径，选中后自动保存',
+    'target.waiting': '等待配置',
+    'target.ready': '目标已就绪',
+    'target.partial': '路径部分可用',
+    'target.error': '目标设置未完成',
+    'path.select': '从已有路径选择',
+    'path.manual': '手动输入模式',
+    'path.manual.on': '手动输入模式：开',
+    'path.refresh': '刷新路径',
+    'path.loading': '读取中',
+    'path.input.placeholder': '例如 website/banner/',
+    'path.search.placeholder': '搜索已有路径（不区分大小写）',
+    'path.meta.waiting': '等待读取路径...',
+    'path.preview.current': '当前上传到：{{prefix}}',
+    'path.preview.root': '根目录 /',
+    'path.help': '可从已有目录中选择，也可手动输入新路径（空即根目录）。',
+    'path.state.normal': '路径状态正常',
+    'path.state.loadingList': '正在读取路径列表...',
+    'path.state.searchEmpty': '没有匹配的路径，可以直接手动输入。',
+    'path.state.loadAll': '正在读取当前 Bucket 的完整路径列表...',
+    'path.state.loadFailedManual': '无法读取已有路径，可手动输入',
+    'path.state.needBucket': '请先在主页面选择 Bucket，再读取路径列表',
+    'path.state.cacheWarm': '已从本地缓存秒开，后台正在刷新最新路径...',
+    'path.state.saveOk': '路径已保存：{{prefix}}',
+    'path.state.saveFail': '路径保存失败：{{reason}}',
+    'path.item.root.meta': '上传到 Bucket 根目录',
+    'path.item.fromBucket': '来自 Bucket 现有路径',
+    'path.summary.full': '已读取 {{total}} 个路径（扫描 {{visited}} 个节点{{fallback}}{{truncated}}）{{cache}}',
+    'path.summary.partial': '已读取 {{total}} 个路径（部分可用，{{failed}} 个分支失败{{fallback}}{{truncated}}）',
+    'path.summary.failed': '路径读取失败，可手动输入路径',
+    'path.summary.fallback': '，容错 {{count}} 次',
+    'path.summary.truncated': '，结果已截断',
+    'path.summary.cache': '，已使用当前 Bucket 缓存',
+    'execute.title': '上传执行区',
+    'execute.sub': '先确认 Bucket/路径，再添加文件并上传',
+    'execute.waitingFiles': '等待文件',
+    'drop.label': '拖拽文件 / 点击选择',
+    'upload.records': '上传记录',
+    'log.toggle.open': '展开',
+    'log.toggle.close': '收起',
+    'log.none': '暂无上传记录',
+    'log.summary': '共 {{total}} 项，失败 {{failed}}，成功 {{ok}}',
+    'log.success': '成功项（{{count}}）',
+    'log.failed': '失败项（{{count}}）',
+    'log.success.empty': '暂无成功项。',
+    'log.failed.empty': '当前无失败项。',
+    'log.copy': '复制',
+    'log.copied': '已复制',
+    'file.col.index': '#',
+    'file.col.name': '文件名',
+    'file.col.size': '大小',
+    'file.col.status': '状态',
+    'file.empty': '还没有文件，拖拽或点击上方区域添加。',
+    'command.title': '快捷操作',
+    'command.search.placeholder': '搜索操作或粘贴 OSS 链接',
+    'command.search.empty': '没有匹配操作，换个关键词试试。',
+    'status.loading': '加载中',
+    'status.ready': '可用',
+    'status.partial': '部分可用',
+    'status.error': '失败',
+    'bookmark.recent': '最近路径：{{bucket}} · {{prefix}}',
+    'bookmark.now': '刚刚',
+    'bookmark.minutesAgo': '{{n}} 分钟前',
+    'bookmark.hoursAgo': '{{n}} 小时前',
+    'bookmark.daysAgo': '{{n}} 天前',
+    'bookmark.recentUsed': '最近使用',
+    'validate.path.leadingSlash': '上传路径不能以 / 开头',
+    'validate.path.trailingSlash': '上传路径必须以 / 结尾',
+    'validate.path.backslash': '上传路径不能包含反斜杠 \\',
+    'validate.path.doubleSlash': '上传路径不能包含连续的 /',
+    'validate.path.dotSegments': '上传路径不能包含 . 或 ..',
+    'validate.path.invalidSegment': '上传路径包含无效目录名',
+    'quick.error.emptyUrl': '请先粘贴 OSS 文件链接',
+    'quick.error.invalidUrl': '链接格式无效，请输入完整 http(s) 地址',
+    'quick.error.noHost': '链接缺少主机名',
+    'quick.error.missingBucketOrObject': '链接中缺少 Bucket 或对象路径',
+    'quick.error.notAliyun': '仅支持阿里云 OSS 直连链接（aliyuncs.com）',
+    'quick.action.resolve': '识别并定位目标',
+    'quick.status.invalidBookmark': '该书签无效，请重新上传后生成',
+    'quick.status.locating': '正在定位：{{target}}',
+    'quick.status.located': '已定位：{{target}}',
+    'quick.status.locatedTarget': '已定位目标：{{target}}',
+    'quick.status.parsed': '已识别：{{target}}',
+    'quick.status.parsedNeedSetup': '已识别：{{target}}（先输入 AK/SK 再保存）',
+    'quick.status.parseFailed': '链接解析失败',
+    'quick.status.locateFailed': '快捷定位失败',
+    'quick.status.bookmarkFailed': '路径书签定位失败',
+    'quick.target.invalid': '目标无效：缺少 bucket/region/path',
+    'quick.target.needSetup': '请先完成 OSS 配置',
+    'quick.target.bucketNotFound': '当前凭证下未找到 Bucket {{bucket}}',
+    'bucket.status.willSwitch': '将切换到 {{bucket}} ({{region}})',
+    'bucket.status.chooseFirst': '请先从列表选择 Bucket。',
+    'bucket.status.saving': '正在校验并切换 Bucket...',
+    'bucket.status.switched': '已切换到 {{bucket}}',
+    'bucket.status.switchFailed': '切换 Bucket 失败',
+    'bucket.state.loading': '正在读取 Bucket 列表...',
+    'bucket.error.loadFailed': '无法读取 Bucket 列表',
+    'bucket.state.setupHint': '先填写 AK / SK，然后在这里搜索并选择 Bucket。',
+    'bucket.state.inlineHint': '正在读取当前账号下的 Bucket 列表...',
+    'bucket.state.noMatch': '没有匹配 Bucket，清空搜索即可恢复全列表。',
+    'bucket.state.selected': '已选择：{{bucket}} ({{region}})',
+    'bucket.state.unselected': '当前未选择 Bucket',
+    'bucket.help.fillCredentials': '先填写 AK / SK，再搜索并选择 Bucket。',
+    'bucket.help.loading': '正在读取 Bucket 列表...',
+    'bucket.help.loaded': '已读取 {{count}} 个 Bucket，直接点击选择。',
+    'bucket.help.empty': '未读取到 Bucket 列表。',
+    'bucket.help.regionLocked': ' 当前 Region 已与所选 Bucket 联动锁定。',
+    'bucket.help.default': '填完 AK / SK 后会加载全量 Bucket 列表；Bucket 可留空先保存，后续到主页面再选。',
+    'bucket.help.inline': '点击列表项自动切换；再次点击 Bucket 触发器或点空白区域可收起。',
+    'bucket.card.title': '点击 Bucket 触发器可展开并切换（自动保存）',
+    'bucket.card.available': '可用',
+    'bucket.card.fullSetup': '完整配置',
+    'upload.addedLocal': '已添加 {{count}} 个本地文件',
+    'upload.addedFiles': '已添加 {{count}} 个文件',
+    'upload.dropFailed': '未能读取拖拽文件，请改用点击选择',
+    'upload.progress': '上传中 {{index}}/{{total}} — {{path}}{{name}}',
+    'upload.failed': '上传失败',
+    'upload.done': '完成 {{done}}/{{total}}',
+    'header.connectionFailed': '连接失败',
+    'setup.region.locked': '已按所选 Bucket 自动锁定 Region',
+    'setup.open': '打开首次配置',
+    'setup.open.note': '填写 AK/SK；Bucket 可后续在主页面选择',
+    'actions.switchBucket': '切换 Bucket',
+    'actions.switchBucket.note': '展开 Bucket 列表并自动保存选择',
+    'actions.selectPath': '选择上传路径',
+    'actions.selectPath.note': '从已加载路径中选择',
+    'actions.manualPathOn': '开启手动路径输入',
+    'actions.manualPathOff': '关闭手动路径输入',
+    'actions.manualPath.note': '手动输入 prefix，不做自动格式化',
+    'actions.addFile': '添加文件',
+    'actions.addFile.note': '打开文件选择器',
+    'actions.startUpload': '开始上传',
+    'actions.startUpload.note': '当前 {{count}} 个文件待上传',
+    'actions.viewLogs': '查看上传日志',
+    'actions.viewLogs.note': '展开失败摘要与成功详情',
+    'actions.openFullSetup': '打开完整配置',
+    'actions.openFullSetup.note': '更新 AK/SK 或重新选择 Bucket',
+    'actions.quickRecognized': '识别为：{{target}}',
+    'actions.keywords.recentPath': '路径 最近 bookmark',
+  },
+  en: {
+    'common.requestFailed': 'Request failed',
+    'common.retry': 'Please retry',
+    'lang.toggle': '中文',
+    'lang.toggle.hint': 'Switch to 中文',
+    'quick.label': 'Quick Actions',
+    'quick.hint.aria': 'Shortcut hint',
+    'quick.input.placeholder': 'Paste an OSS file URL to auto-locate Bucket/Region/Prefix',
+    'quick.go.aria': 'Go',
+    'header.connecting': 'Connecting...',
+    'header.setup': 'Configure OSS',
+    'header.noBucket': 'No Bucket Selected · {{region}}',
+    'setup.title': 'First-Time Setup',
+    'setup.note': 'Fill once, store locally, and auto-load next time.',
+    'setup.ak.placeholder': 'Enter AccessKeyId',
+    'setup.sk.placeholder': 'Enter AccessKeySecret',
+    'setup.bucket.trigger': 'Select Bucket',
+    'setup.bucket.search.placeholder': 'Search Bucket / Region',
+    'setup.bucket.unselected': 'No Bucket selected',
+    'setup.bucket.help.default': 'After AK / SK are filled, the full bucket list will load. Bucket can stay empty now and be selected on the main page.',
+    'setup.region.placeholder': 'e.g. oss-cn-hongkong',
+    'setup.save': 'Save Config',
+    'setup.cancel': 'Cancel',
+    'setup.reset': 'Reset App',
+    'setup.reset.title': 'Reset App',
+    'setup.reset.body': 'This clears local AK/SK/Bucket/Prefix settings. You will need to fill them again.',
+    'setup.reset.cancel': 'Cancel',
+    'setup.reset.confirm': 'Confirm Reset',
+    'setup.reset.running': 'Resetting app...',
+    'setup.reset.done': 'App has been reset. Please fill AK/SK again.',
+    'setup.reset.failed': 'Failed to reset app',
+    'setup.firstRunPrompt': 'Please complete OSS setup first.',
+    'setup.required': 'Access Key ID and Access Key Secret are required on first setup.',
+    'setup.saving': 'Saving local config...',
+    'setup.saved': 'Configuration saved locally.',
+    'setup.saveFailed': 'Failed to save configuration',
+    'flow.title.1': 'Connect Bucket',
+    'flow.note.1': 'Confirm target Bucket and Region',
+    'flow.title.2': 'Select Upload Prefix',
+    'flow.note.2': 'Pick from list or type manually',
+    'flow.title.3': 'Add Files',
+    'flow.note.3': 'Drag-and-drop or click to queue',
+    'flow.title.4': 'Upload',
+    'flow.note.4': 'Track progress and results',
+    'next.kbd': '⌘K shortcut',
+    'next.text.setup': 'Current action: complete setup',
+    'next.text.bucket': 'Current action: confirm bucket',
+    'next.text.path': 'Current action: confirm prefix',
+    'next.text.files': 'Current action: add files',
+    'next.text.uploading': 'Current action: review results',
+    'next.text.upload': 'Current action: start upload',
+    'next.btn.openSetup': 'Open Setup',
+    'next.btn.selectBucket': 'Select Bucket',
+    'next.btn.selectPath': 'Select Prefix',
+    'next.btn.addFiles': 'Add Files',
+    'next.btn.viewLogs': 'View Logs',
+    'next.btn.startUpload': 'Start Upload',
+    'target.title': 'Target',
+    'target.sub.default': 'Manage Bucket and Prefix in one place. Selection auto-saves.',
+    'target.waiting': 'Waiting for setup',
+    'target.ready': 'Target is ready',
+    'target.partial': 'Prefix list partially available',
+    'target.error': 'Target not ready',
+    'path.select': 'Choose Existing Prefix',
+    'path.manual': 'Manual Prefix',
+    'path.manual.on': 'Manual Prefix: ON',
+    'path.refresh': 'Refresh Prefixes',
+    'path.loading': 'Loading',
+    'path.input.placeholder': 'e.g. website/banner/',
+    'path.search.placeholder': 'Search prefixes (case-insensitive)',
+    'path.meta.waiting': 'Waiting to load prefixes...',
+    'path.preview.current': 'Uploading to: {{prefix}}',
+    'path.preview.root': 'Root /',
+    'path.help': 'Select an existing prefix or enter a new one manually (empty means root).',
+    'path.state.normal': 'Prefix status normal',
+    'path.state.loadingList': 'Loading prefix list...',
+    'path.state.searchEmpty': 'No matching prefix. You can type manually.',
+    'path.state.loadAll': 'Loading full prefix list for current bucket...',
+    'path.state.loadFailedManual': 'Failed to load prefixes, manual input is still available',
+    'path.state.needBucket': 'Select a Bucket on the main page before loading prefixes',
+    'path.state.cacheWarm': 'Opened instantly from cache, refreshing latest prefixes in background...',
+    'path.state.saveOk': 'Prefix saved: {{prefix}}',
+    'path.state.saveFail': 'Failed to save prefix: {{reason}}',
+    'path.item.root.meta': 'Upload to bucket root',
+    'path.item.fromBucket': 'Existing bucket prefix',
+    'path.summary.full': 'Loaded {{total}} prefixes (scanned {{visited}} nodes{{fallback}}{{truncated}}){{cache}}',
+    'path.summary.partial': 'Loaded {{total}} prefixes (partial, {{failed}} branches failed{{fallback}}{{truncated}})',
+    'path.summary.failed': 'Failed to load prefixes, manual input is available',
+    'path.summary.fallback': ', fallback used {{count}} times',
+    'path.summary.truncated': ', results truncated',
+    'path.summary.cache': ', served from bucket cache',
+    'execute.title': 'Upload Execution',
+    'execute.sub': 'Confirm Bucket/Prefix, then add files and upload.',
+    'execute.waitingFiles': 'Waiting for files',
+    'drop.label': 'Drop files here / Click to choose',
+    'upload.records': 'Upload Records',
+    'log.toggle.open': 'Expand',
+    'log.toggle.close': 'Collapse',
+    'log.none': 'No upload records yet',
+    'log.summary': 'Total {{total}}, Failed {{failed}}, Success {{ok}}',
+    'log.success': 'Success ({{count}})',
+    'log.failed': 'Failed ({{count}})',
+    'log.success.empty': 'No successful items.',
+    'log.failed.empty': 'No failed items.',
+    'log.copy': 'Copy',
+    'log.copied': 'Copied',
+    'file.col.index': '#',
+    'file.col.name': 'File Name',
+    'file.col.size': 'Size',
+    'file.col.status': 'Status',
+    'file.empty': 'No files yet. Drag files here or click the drop area.',
+    'command.title': 'Quick Actions',
+    'command.search.placeholder': 'Search actions or paste an OSS URL',
+    'command.search.empty': 'No matching action. Try another keyword.',
+    'status.loading': 'Loading',
+    'status.ready': 'Ready',
+    'status.partial': 'Partial',
+    'status.error': 'Failed',
+    'bookmark.recent': 'Recent: {{bucket}} · {{prefix}}',
+    'bookmark.now': 'just now',
+    'bookmark.minutesAgo': '{{n}} min ago',
+    'bookmark.hoursAgo': '{{n}} hr ago',
+    'bookmark.daysAgo': '{{n}} day(s) ago',
+    'bookmark.recentUsed': 'recently used',
+    'validate.path.leadingSlash': 'Upload prefix cannot start with /',
+    'validate.path.trailingSlash': 'Upload prefix must end with /',
+    'validate.path.backslash': 'Upload prefix cannot include backslashes \\',
+    'validate.path.doubleSlash': 'Upload prefix cannot include //',
+    'validate.path.dotSegments': 'Upload prefix cannot include . or .. segments',
+    'validate.path.invalidSegment': 'Upload prefix contains invalid directory name',
+    'quick.error.emptyUrl': 'Please paste an OSS file URL first',
+    'quick.error.invalidUrl': 'Invalid URL format. Please provide a full http(s) URL',
+    'quick.error.noHost': 'URL hostname is missing',
+    'quick.error.missingBucketOrObject': 'Bucket or object path is missing in URL',
+    'quick.error.notAliyun': 'Only direct Alibaba Cloud OSS URLs (aliyuncs.com) are supported',
+    'quick.action.resolve': 'Resolve and Locate Target',
+    'quick.status.invalidBookmark': 'Bookmark is invalid. Re-upload to regenerate.',
+    'quick.status.locating': 'Locating: {{target}}',
+    'quick.status.located': 'Located: {{target}}',
+    'quick.status.locatedTarget': 'Target located: {{target}}',
+    'quick.status.parsed': 'Resolved: {{target}}',
+    'quick.status.parsedNeedSetup': 'Resolved: {{target}} (enter AK/SK first, then save)',
+    'quick.status.parseFailed': 'Failed to parse URL',
+    'quick.status.locateFailed': 'Quick locate failed',
+    'quick.status.bookmarkFailed': 'Failed to locate bookmark target',
+    'quick.target.invalid': 'Invalid target: missing bucket/region/path',
+    'quick.target.needSetup': 'Please complete OSS setup first',
+    'quick.target.bucketNotFound': 'Bucket not found with current credentials: {{bucket}}',
+    'bucket.status.willSwitch': 'Will switch to {{bucket}} ({{region}})',
+    'bucket.status.chooseFirst': 'Please select a bucket first.',
+    'bucket.status.saving': 'Validating and switching bucket...',
+    'bucket.status.switched': 'Switched to {{bucket}}',
+    'bucket.status.switchFailed': 'Failed to switch bucket',
+    'bucket.state.loading': 'Loading bucket list...',
+    'bucket.error.loadFailed': 'Failed to load bucket list',
+    'bucket.state.setupHint': 'Fill AK / SK first, then search and select a Bucket here.',
+    'bucket.state.inlineHint': 'Loading buckets available for this account...',
+    'bucket.state.noMatch': 'No matching Bucket. Clear search to restore the full list.',
+    'bucket.state.selected': 'Selected: {{bucket}} ({{region}})',
+    'bucket.state.unselected': 'No Bucket selected',
+    'bucket.help.fillCredentials': 'Fill AK / SK first, then search and select Bucket.',
+    'bucket.help.loading': 'Loading bucket list...',
+    'bucket.help.loaded': '{{count}} buckets loaded. Click to select.',
+    'bucket.help.empty': 'No buckets loaded.',
+    'bucket.help.regionLocked': ' Region is now locked to the selected Bucket.',
+    'bucket.help.default': 'After AK / SK are filled, full bucket list will load. Bucket can be selected later on main page.',
+    'bucket.help.inline': 'Click an item to switch. Click trigger again or click outside to collapse.',
+    'bucket.card.title': 'Click the Bucket trigger to expand and switch (auto-save)',
+    'bucket.card.available': 'Ready',
+    'bucket.card.fullSetup': 'Full Setup',
+    'upload.addedLocal': 'Added {{count}} local file(s)',
+    'upload.addedFiles': 'Added {{count}} file(s)',
+    'upload.dropFailed': 'Unable to read dropped files. Please use click-to-select.',
+    'upload.progress': 'Uploading {{index}}/{{total}} — {{path}}{{name}}',
+    'upload.failed': 'Upload failed',
+    'upload.done': 'Done {{done}}/{{total}}',
+    'header.connectionFailed': 'Connection failed',
+    'setup.region.locked': 'Region locked to selected Bucket',
+    'setup.open': 'Open Setup',
+    'setup.open.note': 'Fill AK/SK first; Bucket can be selected later on main page',
+    'actions.switchBucket': 'Switch Bucket',
+    'actions.switchBucket.note': 'Expand bucket list and auto-save selected item',
+    'actions.selectPath': 'Select Upload Prefix',
+    'actions.selectPath.note': 'Choose from loaded prefixes',
+    'actions.manualPathOn': 'Enable Manual Prefix',
+    'actions.manualPathOff': 'Disable Manual Prefix',
+    'actions.manualPath.note': 'Type prefix manually without auto-formatting',
+    'actions.addFile': 'Add Files',
+    'actions.addFile.note': 'Open file picker',
+    'actions.startUpload': 'Start Upload',
+    'actions.startUpload.note': '{{count}} file(s) ready',
+    'actions.viewLogs': 'View Upload Logs',
+    'actions.viewLogs.note': 'Expand failed summary and success details',
+    'actions.openFullSetup': 'Open Full Setup',
+    'actions.openFullSetup.note': 'Update AK/SK or reselect Bucket',
+    'actions.quickRecognized': 'Recognized: {{target}}',
+    'actions.keywords.recentPath': 'path recent bookmark',
+  },
+};
+let currentLang = 'zh';
+const prefixCacheByBucket = new Map();
+const PREFIX_CACHE_STORAGE_KEY = 'oss-drop-prefix-cache-v1';
+const PREFIX_CACHE_MAX_AGE_MS = 1000 * 60 * 60 * 24 * 14;
+const COMMAND_USAGE_STORAGE_KEY = 'oss-drop-command-usage-v1';
+const RECENT_PATH_BOOKMARKS_STORAGE_KEY = 'oss-drop-recent-path-bookmarks-v1';
+const RECENT_PATH_BOOKMARKS_LIMIT = 5;
+
+function templateText(template, vars = {}) {
+  return String(template || '').replace(/\{\{\s*(\w+)\s*\}\}/g, (_, key) => {
+    if (Object.prototype.hasOwnProperty.call(vars, key)) {
+      return String(vars[key] ?? '');
+    }
+    return '';
+  });
+}
+
+function t(key, vars = {}) {
+  const langPack = I18N[currentLang] || I18N.zh;
+  const fallbackPack = I18N.zh;
+  const value = (langPack && Object.prototype.hasOwnProperty.call(langPack, key))
+    ? langPack[key]
+    : fallbackPack[key];
+  return templateText(value || key, vars);
+}
+
+function loadLanguagePreference() {
+  const raw = safeReadLocalStorage(LANG_STORAGE_KEY);
+  if (raw === 'zh' || raw === 'en') return raw;
+  const nav = String(navigator.language || '').toLowerCase();
+  return nav.startsWith('zh') ? 'zh' : 'en';
+}
+
+function setLanguage(nextLang, { persist = true } = {}) {
+  const normalized = nextLang === 'en' ? 'en' : 'zh';
+  currentLang = normalized;
+  if (persist) {
+    safeWriteLocalStorage(LANG_STORAGE_KEY, normalized);
+  }
+  applyI18nStatic();
+  updateHeader();
+  updateSetupBucketTrigger();
+  updateBucketSelectedLabel('setup');
+  updateBucketSelectedLabel('inline');
+  renderBucketList('setup');
+  renderBucketList('inline');
+  renderPathList(document.getElementById('path-search')?.value || '');
+  if (prefixesLoading) {
+    setPathState(t('path.state.loadAll'));
+  } else if (prefixesError && !knownPrefixes.length) {
+    setPathState(t('path.state.loadFailedManual'), true);
+  } else if (knownPrefixes.length > 0) {
+    const summary = pathStatusSummary(knownPrefixes.length);
+    setPathState(summary.message, summary.isError);
+  }
+  updatePathPreview();
+  render();
+  renderUploadLogs();
+  updateFlowStepState();
+  renderSetupBucketHelp();
+  if (commandPaletteOpen) {
+    renderCommandPalette();
+  }
+}
+
+function toggleLanguage() {
+  const next = currentLang === 'zh' ? 'en' : 'zh';
+  safeWriteLocalStorage(LANG_STORAGE_KEY, next);
+  currentLang = next;
+  window.location.reload();
+}
+
+function applyI18nStatic() {
+  const setText = (id, value) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = value;
+  };
+  const setPlaceholder = (id, value) => {
+    const el = document.getElementById(id);
+    if (el) el.placeholder = value;
+  };
+
+  setText('quick-label', t('quick.label'));
+  const quickHint = document.getElementById('quick-kbd-hint');
+  if (quickHint) quickHint.setAttribute('aria-label', t('quick.hint.aria'));
+  setPlaceholder('quick-link-input', t('quick.input.placeholder'));
+  const quickGo = document.getElementById('quick-link-go');
+  if (quickGo) quickGo.setAttribute('aria-label', t('quick.go.aria'));
+  setText('setup-title', t('setup.title'));
+  setText('setup-note', t('setup.note'));
+  setPlaceholder('setup-ak', t('setup.ak.placeholder'));
+  setPlaceholder('setup-sk', t('setup.sk.placeholder'));
+  setPlaceholder('setup-bucket-search', t('setup.bucket.search.placeholder'));
+  setPlaceholder('setup-region', t('setup.region.placeholder'));
+  updateSetupBucketTrigger();
+  setText('btn-save-setup', t('setup.save'));
+  setText('btn-cancel-setup', t('setup.cancel'));
+  setText('btn-reset-app', t('setup.reset'));
+  setText('reset-confirm-title', t('setup.reset.title'));
+  setText('reset-confirm-body', t('setup.reset.body'));
+  setText('btn-reset-cancel', t('setup.reset.cancel'));
+  setText('btn-reset-confirm', t('setup.reset.confirm'));
+  const setupBucketHelp = document.getElementById('setup-bucket-help');
+  if (setupBucketHelp) {
+    setupBucketHelp.textContent = t('setup.bucket.help.default');
+  }
+  setText('flow-step-title-1', t('flow.title.1'));
+  setText('flow-step-note-1', t('flow.note.1'));
+  setText('flow-step-title-2', t('flow.title.2'));
+  setText('flow-step-note-2', t('flow.note.2'));
+  setText('flow-step-title-3', t('flow.title.3'));
+  setText('flow-step-note-3', t('flow.note.3'));
+  setText('flow-step-title-4', t('flow.title.4'));
+  setText('flow-step-note-4', t('flow.note.4'));
+  setText('target-title', t('target.title'));
+  const targetSub = document.getElementById('target-sub');
+  if (targetSub && (!config?.hasOssConfig || targetSub.dataset.dynamic !== '1')) {
+    targetSub.textContent = t('target.sub.default');
+  }
+  setText('path-picker-trigger', t('path.select'));
+  setText('path-manual-btn', manualPathMode ? t('path.manual.on') : t('path.manual'));
+  setText('path-refresh-btn', t('path.refresh'));
+  setText('path-state', t('status.loading'));
+  setPlaceholder('path-input', t('path.input.placeholder'));
+  setPlaceholder('path-search', t('path.search.placeholder'));
+  const pathMeta = document.getElementById('path-meta');
+  if (pathMeta && !prefixesLoading && !knownPrefixes.length && !prefixesError) {
+    pathMeta.textContent = t('path.meta.waiting');
+  }
+  setText('path-help', t('path.help'));
+  setText('execute-title', t('execute.title'));
+  setText('execute-sub', t('execute.sub'));
+  setText('upload-card-status', t('execute.waitingFiles'));
+  setText('drop-label', t('drop.label'));
+  setText('btn-upload', t('next.btn.startUpload'));
+  setText('log-title', t('upload.records'));
+  setText('log-toggle-text', logExpanded ? t('log.toggle.close') : t('log.toggle.open'));
+  const logSummary = document.getElementById('log-summary');
+  if (logSummary && !uploadLogs.length) {
+    logSummary.textContent = t('log.none');
+  }
+  setText('command-head-title', t('command.title'));
+  setPlaceholder('command-search', t('command.search.placeholder'));
+  setText('command-head-kbd', 'Cmd/Ctrl + K');
+  const langToggle = document.getElementById('lang-toggle');
+  if (langToggle) {
+    const hint = t('lang.toggle.hint');
+    langToggle.setAttribute('title', hint);
+    langToggle.setAttribute('aria-label', hint);
+  }
+  const headerMeta = document.getElementById('header-meta');
+  if (headerMeta && (!config || !Object.keys(config).length)) {
+    headerMeta.textContent = t('header.connecting');
+  }
+  const setupBucketSelected = document.getElementById('setup-bucket-selected');
+  if (setupBucketSelected && !selectedSetupBucketName) {
+    setupBucketSelected.textContent = t('setup.bucket.unselected');
+  }
+}
+
+function rootPrefixLabel() {
+  return t('path.preview.root');
+}
+
+function escapeHtml(value) {
+  return String(value || '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
+}
+
+function errorText(error, fallback = t('common.requestFailed')) {
+  if (error instanceof Error && error.message) return error.message;
+  if (typeof error === 'string' && error.trim()) return error;
+  if (error && typeof error === 'object') {
+    if (typeof error.message === 'string' && error.message.trim()) return error.message;
+    if (typeof error.error === 'string' && error.error.trim()) return error.error;
+  }
+  return fallback;
+}
+
+function safeReadLocalStorage(key) {
+  try {
+    return window.localStorage.getItem(key);
+  } catch (_) {
+    return null;
+  }
+}
+
+function safeWriteLocalStorage(key, value) {
+  try {
+    window.localStorage.setItem(key, value);
+  } catch (_) {
+    // 忽略本地存储不可用或配额不足
+  }
+}
+
+function readPrefixCacheStore() {
+  const raw = safeReadLocalStorage(PREFIX_CACHE_STORAGE_KEY);
+  if (!raw) return {};
+  try {
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === 'object' ? parsed : {};
+  } catch (_) {
+    return {};
+  }
+}
+
+function writePrefixCacheStore(store) {
+  safeWriteLocalStorage(PREFIX_CACHE_STORAGE_KEY, JSON.stringify(store));
+}
+
+function getPersistedPrefixCache(cacheKey) {
+  const store = readPrefixCacheStore();
+  const item = store?.[cacheKey];
+  if (!item || typeof item !== 'object') return null;
+
+  const savedAt = Number(item.savedAt || 0);
+  if (!savedAt || Date.now() - savedAt > PREFIX_CACHE_MAX_AGE_MS) {
+    delete store[cacheKey];
+    writePrefixCacheStore(store);
+    return null;
+  }
+
+  return {
+    prefixes: uniqueSortedPrefixes(item.prefixes || []),
+    defaultPrefix: String(item.defaultPrefix || ''),
+    stats: normalizePathStats(item.stats),
+    savedAt,
+  };
+}
+
+function persistPrefixCache(cacheKey, data) {
+  const normalized = {
+    prefixes: uniqueSortedPrefixes(data.prefixes || []),
+    defaultPrefix: String(data.defaultPrefix || ''),
+    stats: normalizePathStats(data.stats),
+    savedAt: Date.now(),
+  };
+  prefixCacheByBucket.set(cacheKey, normalized);
+
+  const store = readPrefixCacheStore();
+  store[cacheKey] = normalized;
+  writePrefixCacheStore(store);
+}
+
+function getCachedPrefixes(cacheKey) {
+  if (prefixCacheByBucket.has(cacheKey)) {
+    return prefixCacheByBucket.get(cacheKey);
+  }
+  const persisted = getPersistedPrefixCache(cacheKey);
+  if (persisted) {
+    prefixCacheByBucket.set(cacheKey, persisted);
+    return persisted;
+  }
+  return null;
+}
+
+function loadCommandUsageStore() {
+  const raw = safeReadLocalStorage(COMMAND_USAGE_STORAGE_KEY);
+  if (!raw) return {};
+  try {
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== 'object') return {};
+    const result = {};
+    for (const [id, info] of Object.entries(parsed)) {
+      result[id] = {
+        count: Number.isFinite(Number(info?.count)) ? Number(info.count) : 0,
+        lastUsed: Number.isFinite(Number(info?.lastUsed)) ? Number(info.lastUsed) : 0,
+      };
+    }
+    return result;
+  } catch (_) {
+    return {};
+  }
+}
+
+function saveCommandUsageStore() {
+  safeWriteLocalStorage(COMMAND_USAGE_STORAGE_KEY, JSON.stringify(commandUsageMap));
+}
+
+function markCommandActionUsed(actionId) {
+  if (!actionId) return;
+  const prev = commandUsageMap[actionId] || { count: 0, lastUsed: 0 };
+  commandUsageMap[actionId] = {
+    count: Number(prev.count || 0) + 1,
+    lastUsed: Date.now(),
+  };
+  saveCommandUsageStore();
+}
+
+function bookmarkIdentity(item) {
+  return `${item.bucket}::${item.region}::${item.prefix}`;
+}
+
+function normalizeBookmarkPrefix(value) {
+  const prefix = String(value || '').trim();
+  const error = validatePathInput(prefix);
+  if (error) return null;
+  return prefix;
+}
+
+function normalizeRecentPathBookmark(raw) {
+  if (!raw || typeof raw !== 'object') return null;
+  const bucket = String(raw.bucket || '').trim();
+  if (!bucket) return null;
+  const region = normalizeRegion(raw.region);
+  const prefix = normalizeBookmarkPrefix(raw.prefix || '');
+  if (prefix === null) return null;
+  const lastUsedAt = Number.isFinite(Number(raw.lastUsedAt))
+    ? Number(raw.lastUsedAt)
+    : Date.now();
+
+  return {
+    bucket,
+    region,
+    prefix,
+    lastUsedAt,
+  };
+}
+
+function readRecentPathBookmarksStore() {
+  const raw = safeReadLocalStorage(RECENT_PATH_BOOKMARKS_STORAGE_KEY);
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+
+    const normalized = parsed
+      .map(item => normalizeRecentPathBookmark(item))
+      .filter(Boolean)
+      .sort((a, b) => b.lastUsedAt - a.lastUsedAt);
+
+    const seen = new Set();
+    const deduped = [];
+    for (const item of normalized) {
+      const key = bookmarkIdentity(item);
+      if (seen.has(key)) continue;
+      seen.add(key);
+      deduped.push(item);
+      if (deduped.length >= RECENT_PATH_BOOKMARKS_LIMIT) break;
+    }
+    return deduped;
+  } catch (_) {
+    return [];
+  }
+}
+
+function saveRecentPathBookmarksStore() {
+  safeWriteLocalStorage(RECENT_PATH_BOOKMARKS_STORAGE_KEY, JSON.stringify(recentPathBookmarks));
+}
+
+function setRecentPathBookmarks(nextBookmarks, { persist = true, rerender = true } = {}) {
+  const normalized = (Array.isArray(nextBookmarks) ? nextBookmarks : [])
+    .map(item => normalizeRecentPathBookmark(item))
+    .filter(Boolean)
+    .sort((a, b) => b.lastUsedAt - a.lastUsedAt);
+
+  const seen = new Set();
+  recentPathBookmarks = [];
+  for (const item of normalized) {
+    const key = bookmarkIdentity(item);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    recentPathBookmarks.push(item);
+    if (recentPathBookmarks.length >= RECENT_PATH_BOOKMARKS_LIMIT) break;
+  }
+
+  if (persist) {
+    saveRecentPathBookmarksStore();
+  }
+  if (rerender && commandPaletteOpen) {
+    renderCommandPalette();
+  }
+}
+
+function upsertRecentPathBookmark(bookmark, { timestamp = Date.now(), rerender = true } = {}) {
+  const normalized = normalizeRecentPathBookmark({
+    ...bookmark,
+    lastUsedAt: timestamp,
+  });
+  if (!normalized) return null;
+
+  const next = [
+    normalized,
+    ...recentPathBookmarks.filter(item => bookmarkIdentity(item) !== bookmarkIdentity(normalized)),
+  ];
+
+  setRecentPathBookmarks(next, { persist: true, rerender });
+  return normalized;
+}
+
+function formatBookmarkRecentTime(timestamp) {
+  const ts = Number(timestamp || 0);
+  if (!ts) return t('bookmark.recentUsed');
+  const deltaMinutes = Math.max(0, Math.floor((Date.now() - ts) / 60000));
+  if (deltaMinutes < 1) return t('bookmark.now');
+  if (deltaMinutes < 60) return t('bookmark.minutesAgo', { n: deltaMinutes });
+  const deltaHours = Math.floor(deltaMinutes / 60);
+  if (deltaHours < 24) return t('bookmark.hoursAgo', { n: deltaHours });
+  const deltaDays = Math.floor(deltaHours / 24);
+  return t('bookmark.daysAgo', { n: deltaDays });
+}
+
+function validatePathInput(value) {
+  const raw = String(value || '').trim();
+
+  if (!raw) return null;
+  if (raw.startsWith('/')) return t('validate.path.leadingSlash');
+  if (!raw.endsWith('/')) return t('validate.path.trailingSlash');
+  if (raw.includes('\\')) return t('validate.path.backslash');
+  if (raw.includes('//')) return t('validate.path.doubleSlash');
+
+  const segments = raw.split('/').filter(Boolean);
+  if (segments.some(segment => segment === '.' || segment === '..')) {
+    return t('validate.path.dotSegments');
+  }
+
+  if (segments.some(segment => segment.trim() !== segment || !segment)) {
+    return t('validate.path.invalidSegment');
+  }
+
+  return null;
+}
+
+function normalizeRegion(value) {
+  const region = String(value || '').trim();
+  if (!region) return 'oss-cn-hongkong';
+  if (region.startsWith('oss-')) return region;
+  return `oss-${region}`;
+}
+
+function setQuickStatus(message, isError = false, autoClearMs = 0) {
+  const el = document.getElementById('quick-status');
+  if (!el) return;
+  el.textContent = message || '';
+  el.style.color = isError ? 'var(--danger)' : 'var(--muted)';
+
+  if (quickStatusTimer) {
+    clearTimeout(quickStatusTimer);
+    quickStatusTimer = null;
+  }
+  if (autoClearMs > 0 && message) {
+    quickStatusTimer = setTimeout(() => {
+      const latest = document.getElementById('quick-status');
+      if (latest) latest.textContent = '';
+      quickStatusTimer = null;
+    }, autoClearMs);
+  }
+}
+
+function flashQuickSuccess() {
+  const box = document.querySelector('.quick-box');
+  if (!box) return;
+  box.classList.remove('flash-success');
+  // 触发重排，确保同一类名可重复播放动画
+  void box.offsetWidth;
+  box.classList.add('flash-success');
+}
+
+function setCommandSearchStatus(message, isError = false, autoClearMs = 0) {
+  const el = document.getElementById('command-search-status');
+  if (!el) return;
+  el.textContent = message || '';
+  el.style.color = isError ? 'var(--danger)' : 'var(--muted)';
+
+  if (commandStatusTimer) {
+    clearTimeout(commandStatusTimer);
+    commandStatusTimer = null;
+  }
+  if (autoClearMs > 0 && message) {
+    commandStatusTimer = setTimeout(() => {
+      const latest = document.getElementById('command-search-status');
+      if (latest) latest.textContent = '';
+      commandStatusTimer = null;
+    }, autoClearMs);
+  }
+}
+
+function parseOssLinkTarget(rawUrl) {
+  const source = String(rawUrl || '').trim();
+  if (!source) {
+    throw new Error(t('quick.error.emptyUrl'));
+  }
+
+  let url;
+  try {
+    url = new URL(source);
+  } catch (_) {
+    throw new Error(t('quick.error.invalidUrl'));
+  }
+
+  const host = String(url.hostname || '').trim().toLowerCase();
+  if (!host) {
+    throw new Error(t('quick.error.noHost'));
+  }
+
+  const hostParts = host.split('.');
+  let bucket = '';
+  let region = '';
+  let objectPath = '';
+
+  const isAliyunHost = host.endsWith('.aliyuncs.com');
+
+  if (isAliyunHost && hostParts.length >= 4 && hostParts[1].startsWith('oss-')) {
+    // 虚拟主机风格: {bucket}.{region}.aliyuncs.com/{object}
+    bucket = hostParts[0];
+    region = normalizeRegion(hostParts[1]);
+    objectPath = String(url.pathname || '').replace(/^\/+/, '');
+  } else if (isAliyunHost && hostParts[0].startsWith('oss-')) {
+    // Path 风格: {region}.aliyuncs.com/{bucket}/{object}
+    region = normalizeRegion(hostParts[0]);
+    const rawPath = String(url.pathname || '').replace(/^\/+/, '');
+    const firstSlash = rawPath.indexOf('/');
+    if (firstSlash <= 0) {
+      throw new Error(t('quick.error.missingBucketOrObject'));
+    }
+    bucket = rawPath.slice(0, firstSlash);
+    objectPath = rawPath.slice(firstSlash + 1);
+  } else {
+    throw new Error(t('quick.error.notAliyun'));
+  }
+
+  let decodedPath = '';
+  try {
+    decodedPath = decodeURIComponent(objectPath || '');
+  } catch (_) {
+    decodedPath = objectPath || '';
+  }
+
+  const cleanPath = String(decodedPath || '').replace(/^\/+/, '');
+  let prefix = '';
+  if (cleanPath.endsWith('/')) {
+    prefix = cleanPath;
+  } else {
+    const idx = cleanPath.lastIndexOf('/');
+    prefix = idx >= 0 ? cleanPath.slice(0, idx + 1) : '';
+  }
+
+  return {
+    bucket: String(bucket || '').trim(),
+    region: normalizeRegion(region),
+    prefix,
+  };
+}
+
+function buildQuickLinkPaletteAction(rawUrl) {
+  const source = String(rawUrl || '').trim();
+  if (!source) return null;
+
+  try {
+    const parsed = parseOssLinkTarget(source);
+    const targetLabel = `${parsed.bucket} ${parsed.region} ${parsed.prefix || rootPrefixLabel()}`;
+    return {
+      id: 'quick-link-resolve',
+      title: t('quick.action.resolve'),
+      note: targetLabel,
+      keywords: ['link', 'url', 'bucket', 'path', 'prefix', '定位', '路径'],
+      suggested: true,
+      keepPaletteOpen: true,
+      run: () => applyQuickLink(source, { source: 'command' }),
+      order: -1,
+    };
+  } catch (_) {
+    return null;
+  }
+}
+
+function targetSummaryLabel(target) {
+  return `${target.bucket} ${target.region} ${target.prefix || rootPrefixLabel()}`;
+}
+
+async function applyResolvedTarget(rawTarget, { allowSetupPrefill = true } = {}) {
+  const target = normalizeRecentPathBookmark(rawTarget);
+  if (!target) {
+    throw new Error(t('quick.target.invalid'));
+  }
+
+  if (!config?.hasOssConfig) {
+    if (allowSetupPrefill) {
+      setCommandPaletteOpen(false);
+      showSetup(true);
+      setSelectedBucketName('setup', target.bucket);
+      const regionInput = setupField('setup-region');
+      if (regionInput) regionInput.value = target.region;
+      syncSetupRegionLock();
+      renderBucketList('setup');
+      return { pendingSetup: true, target };
+    }
+    throw new Error(t('quick.target.needSetup'));
+  }
+
+  if (!knownBuckets.length) {
+    await refreshBuckets();
+  }
+
+  const matchedBucket = knownBuckets.find(item => item.name === target.bucket);
+  if (!matchedBucket) {
+    throw new Error(t('quick.target.bucketNotFound', { bucket: target.bucket }));
+  }
+
+  const targetRegion = normalizeRegion(matchedBucket.region || target.region);
+  const needBucketSwitch = config.bucket !== target.bucket || normalizeRegion(config.region) !== targetRegion;
+
+  if (needBucketSwitch) {
+    const data = await backendSaveConfig({
+      bucket: target.bucket,
+      region: targetRegion,
+      prefix: target.prefix,
+    });
+    config = data.config;
+    updateHeader();
+    showUploader();
+    await refreshBuckets();
+    await refreshPrefixes(target.prefix, true);
+  } else {
+    if (String(config.prefix || '').trim() !== String(target.prefix || '').trim()) {
+      const data = await backendSaveConfig({ prefix: target.prefix });
+      config = data.config;
+      updateHeader();
+    }
+    selectPathPrefix(target.prefix, { autoSave: false, collapseSearch: true });
+  }
+
+  return {
+    pendingSetup: false,
+    target: {
+      bucket: target.bucket,
+      region: targetRegion,
+      prefix: target.prefix,
+    },
+  };
+}
+
+async function applyRecentPathBookmark(bookmark) {
+  const target = normalizeRecentPathBookmark(bookmark);
+  if (!target) {
+    setCommandSearchStatus(t('quick.status.invalidBookmark'), true, 5000);
+    return;
+  }
+
+  setCommandSearchStatus(t('quick.status.locating', { target: targetSummaryLabel(target) }));
+
+  try {
+    const result = await applyResolvedTarget(target, { allowSetupPrefill: false });
+    if (result.pendingSetup) return;
+
+    const saved = upsertRecentPathBookmark(result.target);
+    if (saved) {
+      setStatus(t('quick.status.locatedTarget', { target: targetSummaryLabel(saved) }));
+      setCommandSearchStatus(t('quick.status.located', { target: targetSummaryLabel(saved) }), false, 5000);
+    } else {
+      setStatus(t('quick.status.locatedTarget', { target: targetSummaryLabel(result.target) }));
+      setCommandSearchStatus(t('quick.status.located', { target: targetSummaryLabel(result.target) }), false, 5000);
+    }
+    setCommandPaletteOpen(false);
+  } catch (e) {
+    setCommandSearchStatus(errorText(e, t('quick.status.bookmarkFailed')), true, 6000);
+  }
+}
+
+function handleQuickLinkKeydown(event) {
+  if (event.key !== 'Enter') return;
+  event.preventDefault();
+  void applyQuickLinkFromInput();
+}
+
+async function applyQuickLink(raw, { source = 'quick' } = {}) {
+  let parsed;
+  try {
+    parsed = parseOssLinkTarget(raw);
+  } catch (e) {
+    const msg = errorText(e, t('quick.status.parseFailed'));
+    setQuickStatus(msg, true, 5000);
+    setCommandSearchStatus(msg, true, 5000);
+    return;
+  }
+
+  const targetLabel = targetSummaryLabel(parsed);
+  const quickInput = document.getElementById('quick-link-input');
+  const commandInput = document.getElementById('command-search');
+  if (quickInput && quickInput.value !== raw) {
+    quickInput.value = raw;
+  }
+  if (commandInput && commandInput.value !== raw) {
+    commandInput.value = raw;
+    commandPaletteQuery = raw;
+  }
+
+  setQuickStatus(t('quick.status.parsed', { target: targetLabel }));
+  setCommandSearchStatus(t('quick.status.parsed', { target: targetLabel }));
+
+  const go = document.getElementById('quick-link-go');
+  if (go) go.disabled = true;
+  try {
+    const result = await applyResolvedTarget(parsed, { allowSetupPrefill: true });
+    if (result.pendingSetup) {
+      setQuickStatus(t('quick.status.parsedNeedSetup', { target: targetLabel }), false, 6000);
+      setCommandSearchStatus(t('quick.status.parsedNeedSetup', { target: targetLabel }), false, 6000);
+      return;
+    }
+
+    const finalTarget = result.target || parsed;
+    setStatus(t('quick.status.locatedTarget', { target: targetSummaryLabel(finalTarget) }));
+    setCommandPaletteOpen(false);
+    setQuickStatus(t('quick.status.located', { target: targetSummaryLabel(finalTarget) }), false, 5000);
+    setCommandSearchStatus(t('quick.status.located', { target: targetSummaryLabel(finalTarget) }), false, 5000);
+    flashQuickSuccess();
+  } catch (e) {
+    const msg = errorText(e, t('quick.status.locateFailed'));
+    setQuickStatus(msg, true, 6000);
+    setCommandSearchStatus(msg, true, 6000);
+  } finally {
+    if (go) go.disabled = false;
+  }
+}
+
+async function applyQuickLinkFromInput() {
+  const input = document.getElementById('quick-link-input');
+  const raw = String(input?.value || '').trim();
+  await applyQuickLink(raw, { source: 'quick' });
+}
+
+async function applyQuickLinkFromCommand() {
+  const input = document.getElementById('command-search');
+  const raw = String(input?.value || '').trim();
+  await applyQuickLink(raw, { source: 'command' });
+}
+
+function getFileNameFromUrlPath(rawUrl) {
+  try {
+    const u = new URL(rawUrl);
+    const path = decodeURIComponent(u.pathname || '');
+    const parts = path.split('/').filter(Boolean);
+    return parts[parts.length - 1] || 'dropped-file';
+  } catch (_) {
+    return 'dropped-file';
+  }
+}
+
+function fileFromWebkitEntry(entry) {
+  return new Promise(resolve => {
+    if (!entry || !entry.isFile || typeof entry.file !== 'function') {
+      resolve(null);
+      return;
+    }
+    entry.file(file => resolve(file || null), () => resolve(null));
+  });
+}
+
+async function extractDroppedFiles(dataTransfer) {
+  if (!dataTransfer) return [];
+
+  if (dataTransfer.files && dataTransfer.files.length > 0) {
+    return Array.from(dataTransfer.files).filter(Boolean);
+  }
+
+  const direct = [];
+  const entryReaders = [];
+  const items = Array.from(dataTransfer.items || []);
+
+  for (const item of items) {
+    if (item?.kind !== 'file') continue;
+    const file = item.getAsFile?.();
+    if (file) {
+      direct.push(file);
+      continue;
+    }
+
+    const entry = typeof item.webkitGetAsEntry === 'function' ? item.webkitGetAsEntry() : null;
+    if (entry?.isFile) {
+      entryReaders.push(fileFromWebkitEntry(entry));
+    }
+  }
+
+  if (direct.length > 0) {
+    return direct;
+  }
+
+  if (entryReaders.length > 0) {
+    const resolved = (await Promise.all(entryReaders)).filter(Boolean);
+    if (resolved.length > 0) {
+      return resolved;
+    }
+  }
+
+  const uriListRaw = String(dataTransfer.getData?.('text/uri-list') || '').trim();
+  if (uriListRaw) {
+    const urls = uriListRaw
+      .split('\n')
+      .map(line => line.trim())
+      .filter(line => line && !line.startsWith('#') && line.startsWith('file://'));
+
+    const viaFetch = [];
+    for (const url of urls) {
+      try {
+        const response = await fetch(url);
+        if (!response.ok) continue;
+        const blob = await response.blob();
+        const file = new File([blob], getFileNameFromUrlPath(url), {
+          type: blob.type || 'application/octet-stream',
+        });
+        viaFetch.push(file);
+      } catch (_) {
+        // 忽略单个失败，继续尝试其他 URI
+      }
+    }
+    if (viaFetch.length > 0) {
+      return viaFetch;
+    }
+  }
+
+  return [];
+}
+
+function hasFilePayload(event) {
+  const dt = event?.dataTransfer;
+  if (!dt) return false;
+  if (dt.files && dt.files.length > 0) return true;
+  if (Array.from(dt.items || []).some(item => item?.kind === 'file')) return true;
+
+  const types = Array.from(dt.types || []);
+  return types.includes('Files') || types.includes('public.file-url') || types.includes('text/uri-list');
+}
+
+function isTauriRuntime() {
+  return Boolean(window.__TAURI__ && window.__TAURI__.core && window.__TAURI__.core.invoke);
+}
+
+async function invokeTauri(command, payload = {}) {
+  return window.__TAURI__.core.invoke(command, payload);
+}
+
+async function backendGetConfig() {
+  if (isTauriRuntime()) {
+    return invokeTauri('get_config');
+  }
+
+  const response = await fetch('/api/config');
+  return response.json();
+}
+
+async function backendSaveConfig(payload) {
+  if (isTauriRuntime()) {
+    return invokeTauri('save_config', { payload });
+  }
+
+  const response = await fetch('/api/setup', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.error || t('setup.saveFailed'));
+  }
+
+  return data;
+}
+
+async function backendResetConfig() {
+  if (isTauriRuntime()) {
+    return invokeTauri('reset_config');
+  }
+
+  const response = await fetch('/api/reset-config', {
+    method: 'POST',
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(data.error || t('setup.reset.failed'));
+  }
+
+  return data;
+}
+
+async function backendListBuckets() {
+  if (isTauriRuntime()) {
+    return invokeTauri('list_buckets');
+  }
+
+  const response = await fetch('/api/buckets');
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(data.error || t('bucket.error.loadFailed'));
+  }
+
+  return data;
+}
+
+async function backendListBucketsPreview(payload) {
+  if (isTauriRuntime()) {
+    return invokeTauri('list_buckets_preview', { payload });
+  }
+
+  const response = await fetch('/api/buckets/preview', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(data.error || t('bucket.error.loadFailed'));
+  }
+
+  return data.buckets || [];
+}
+
+async function backendListPrefixes(parentPrefix) {
+  if (isTauriRuntime()) {
+    return invokeTauri('list_prefixes', { parent: parentPrefix || null });
+  }
+
+  const url = parentPrefix
+    ? `/api/prefixes?parent=${encodeURIComponent(parentPrefix)}`
+    : '/api/prefixes';
+  const response = await fetch(url);
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(data.error || t('path.state.loadFailedManual'));
+  }
+
+  return data;
+}
+
+async function backendListAllPrefixes() {
+  if (isTauriRuntime()) {
+    return invokeTauri('list_all_prefixes');
+  }
+
+  const response = await fetch('/api/prefixes/all');
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(data.error || t('path.state.loadFailedManual'));
+  }
+
+  return data;
+}
+
+async function backendUploadFilePaths(path, files) {
+  if (!isTauriRuntime()) {
+    throw new Error('Local-path upload is only available in Tauri desktop');
+  }
+
+  const data = await invokeTauri('upload_file_paths', {
+    path: path || null,
+    files,
+  });
+  return data.results || [];
+}
+
+async function uploadSingleFile(file, targetPrefix) {
+  if (isTauriRuntime()) {
+    if (file?.localPath) {
+      const results = await backendUploadFilePaths(targetPrefix || null, [{
+        path: file.localPath,
+        name: file.name,
+      }]);
+      return results?.[0];
+    }
+
+    const payload = {
+      name: file.name,
+      bytes: Array.from(new Uint8Array(await file.arrayBuffer())),
+      mimeType: file.type || '',
+      size: file.size,
+    };
+
+    const data = await invokeTauri('upload_files', {
+      path: targetPrefix || null,
+      files: [payload],
+    });
+
+    return data.results?.[0];
+  }
+
+  const fd = new FormData();
+  fd.append('files', file);
+  fd.append('path', targetPrefix);
+
+  const response = await fetch('/api/upload', { method: 'POST', body: fd });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(data.error || t('upload.failed'));
+  }
+  return data.results?.[0];
+}
+
+function setupField(id) {
+  return document.getElementById(id);
+}
+
+function updateHeader() {
+  const meta = document.getElementById('header-meta');
+  if (!config.hasOssConfig) {
+    meta.textContent = t('header.setup');
+    return;
+  }
+
+  const bucket = String(config.bucket || '').trim();
+  if (!bucket) {
+    meta.textContent = t('header.noBucket', { region: config.region || 'oss-cn-hongkong' });
+    return;
+  }
+
+  meta.textContent = `${bucket} · ${config.region}`;
+}
+
+function updateSetupStatus(message, isError = false) {
+  const status = document.getElementById('setup-status');
+  status.textContent = message || '';
+  status.style.color = isError ? 'var(--danger)' : 'var(--muted)';
+}
+
+function updateBucketStatus(message, isError = false) {
+  const status = document.getElementById('bucket-status');
+  if (!status) return;
+  status.textContent = message || '';
+  status.style.color = isError ? 'var(--danger)' : 'var(--muted)';
+  setCardStatus('bucket-card-status', isError ? 'error' : (bucketSaving ? 'loading' : 'ready'));
+  updateFlowStepState();
+}
+
+function updateTargetStatus() {
+  const bucketOk = Boolean(config?.bucket && config?.region && config?.hasOssConfig);
+  const pathOk = Boolean(!prefixesLoading && !prefixesError);
+  let state = 'loading';
+  let text = t('target.waiting');
+
+  if (bucketOk && pathOk) {
+    state = 'ready';
+    text = t('target.ready');
+  } else if (bucketOk && (prefixesError || prefixLoadStats.failedParents.length > 0)) {
+    state = 'partial';
+    text = t('target.partial');
+  } else if (!bucketOk || prefixesError) {
+    state = 'error';
+    text = t('target.error');
+  }
+
+  setCardStatus('target-card-status', state);
+  const targetSub = document.querySelector('.target-sub');
+  if (targetSub) targetSub.textContent = text;
+}
+
+function setCardStatus(id, state, text) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = text || t(`status.${state}`) || '';
+  el.classList.remove('state-loading', 'state-ready', 'state-error', 'state-partial');
+  el.classList.add(`state-${state}`);
+}
+
+function updateFlowStepState() {
+  const bucketReady = Boolean(config?.bucket && config?.region && config?.hasOssConfig);
+  const pathReady = Boolean(!prefixesLoading && !prefixesError);
+  const hasFiles = files.length > 0;
+
+  let currentStep = 1;
+  if (bucketReady) currentStep = 2;
+  if (bucketReady && pathReady) currentStep = 3;
+  if (bucketReady && pathReady && hasFiles) currentStep = 4;
+  if (isUploading) currentStep = 4;
+  currentFlowStep = currentStep;
+
+  for (let step = 1; step <= 4; step++) {
+    const el = document.getElementById(`flow-step-${step}`);
+    if (!el) continue;
+    el.classList.remove('state-active', 'state-done', 'state-pending');
+    if (step < currentStep) {
+      el.classList.add('state-done');
+    } else if (step === currentStep) {
+      el.classList.add('state-active');
+    } else {
+      el.classList.add('state-pending');
+    }
+  }
+
+  if (isUploading) {
+    setCardStatus('upload-card-status', 'loading');
+  } else if (!hasFiles) {
+    setCardStatus('upload-card-status', 'loading');
+  } else {
+    setCardStatus('upload-card-status', 'ready');
+  }
+
+  updateTargetStatus();
+  updateNextAction();
+}
+
+function setLogExpanded(open) {
+  logExpanded = Boolean(open);
+  const section = document.getElementById('log-section');
+  const text = document.getElementById('log-toggle-text');
+  if (section) {
+    section.classList.toggle('collapsed', !logExpanded);
+  }
+  if (text) {
+    text.textContent = logExpanded ? t('log.toggle.close') : t('log.toggle.open');
+  }
+}
+
+function toggleLogSection() {
+  setLogExpanded(!logExpanded);
+}
+
+function setNextActionText(text) {
+  const textEl = document.getElementById('next-action-text');
+  if (!textEl) return;
+  textEl.textContent = text;
+}
+
+function updateNextAction() {
+  const btnEl = document.getElementById('next-action-btn');
+  if (!btnEl) return;
+
+  if (!config?.hasOssConfig) {
+    nextActionKind = 'setup';
+    setNextActionText(t('next.text.setup'));
+    btnEl.textContent = t('next.btn.openSetup');
+    btnEl.disabled = false;
+    renderCommandPalette();
+    return;
+  }
+
+  const hasFiles = files.length > 0;
+  if (currentFlowStep <= 1) {
+    nextActionKind = 'bucket';
+    setNextActionText(t('next.text.bucket'));
+    btnEl.textContent = t('next.btn.selectBucket');
+    btnEl.disabled = false;
+    renderCommandPalette();
+    return;
+  }
+
+  if (currentFlowStep === 2) {
+    nextActionKind = 'path';
+    setNextActionText(t('next.text.path'));
+    btnEl.textContent = t('next.btn.selectPath');
+    btnEl.disabled = false;
+    renderCommandPalette();
+    return;
+  }
+
+  if (currentFlowStep === 3 || (currentFlowStep === 4 && !hasFiles)) {
+    nextActionKind = 'files';
+    setNextActionText(t('next.text.files'));
+    btnEl.textContent = t('next.btn.addFiles');
+    btnEl.disabled = false;
+    renderCommandPalette();
+    return;
+  }
+
+  if (isUploading) {
+    nextActionKind = 'uploading';
+    setNextActionText(t('next.text.uploading'));
+    btnEl.textContent = t('next.btn.viewLogs');
+    btnEl.disabled = false;
+    renderCommandPalette();
+    return;
+  }
+
+  nextActionKind = 'upload';
+  setNextActionText(t('next.text.upload'));
+  btnEl.textContent = t('next.btn.startUpload');
+  btnEl.disabled = !hasFiles;
+  renderCommandPalette();
+}
+
+function runNextAction() {
+  switch (nextActionKind) {
+    case 'setup':
+      showSetup(!config?.hasOssConfig);
+      break;
+    case 'bucket':
+      showBucketEditor();
+      break;
+    case 'path':
+      setPathPickerOpen(true, { focusSearch: true });
+      break;
+    case 'files': {
+      const input = document.getElementById('file-input');
+      input?.click();
+      break;
+    }
+    case 'upload':
+      if (!isUploading && files.length > 0) {
+        void startUpload();
+      }
+      break;
+    case 'uploading':
+      setLogExpanded(true);
+      break;
+    default:
+      break;
+  }
+}
+
+function recentPathBookmarkActionId(bookmark) {
+  return `bookmark:${encodeURIComponent(bookmark.bucket)}:${encodeURIComponent(bookmark.region)}:${encodeURIComponent(bookmark.prefix)}`;
+}
+
+function recentPathBookmarkTitle(bookmark) {
+  return t('bookmark.recent', { bucket: bookmark.bucket, prefix: bookmark.prefix || rootPrefixLabel() });
+}
+
+function getRecentPathBookmarkActions() {
+  if (!recentPathBookmarks.length) return [];
+
+  return recentPathBookmarks.map(bookmark => ({
+    id: recentPathBookmarkActionId(bookmark),
+    title: recentPathBookmarkTitle(bookmark),
+    note: `${bookmark.region} · ${formatBookmarkRecentTime(bookmark.lastUsedAt)}`,
+    keywords: ['recent', 'bookmark', 'path', '路径', '最近', bookmark.bucket, bookmark.region, bookmark.prefix || '/'],
+    keepPaletteOpen: true,
+    run: () => applyRecentPathBookmark(bookmark),
+  }));
+}
+
+function getCommandPaletteActions() {
+  const actions = [];
+
+  if (!config?.hasOssConfig) {
+    actions.push({
+      id: 'setup',
+      title: t('setup.open'),
+      note: t('setup.open.note'),
+      keywords: ['setup', 'config', '配置', 'ak', 'sk', 'bucket', 'region'],
+      run: () => showSetup(true),
+    });
+    return actions.map((action, order) => ({ ...action, order }));
+  }
+
+  actions.push({
+    id: 'bucket',
+    title: t('actions.switchBucket'),
+    note: t('actions.switchBucket.note'),
+    keywords: ['bucket', 'switch', '切换', '目标', 'region'],
+    run: () => showBucketEditor(),
+  });
+
+  actions.push({
+    id: 'path',
+    title: t('actions.selectPath'),
+    note: t('actions.selectPath.note'),
+    keywords: ['path', 'prefix', '路径', '目录'],
+    run: () => setPathPickerOpen(true, { focusSearch: true }),
+  });
+
+  actions.push(...getRecentPathBookmarkActions());
+
+  actions.push({
+    id: 'manual',
+    title: manualPathMode ? t('actions.manualPathOff') : t('actions.manualPathOn'),
+    note: t('actions.manualPath.note'),
+    keywords: ['manual', 'path', 'prefix', '手动'],
+    run: () => setManualPathMode(!manualPathMode, { focusInput: true }),
+  });
+
+  actions.push({
+    id: 'files',
+    title: t('actions.addFile'),
+    note: t('actions.addFile.note'),
+    keywords: ['file', 'drop', '文件', '拖拽'],
+    run: () => document.getElementById('file-input')?.click(),
+  });
+
+  if (files.length > 0 && !isUploading) {
+    actions.push({
+      id: 'upload',
+      title: t('actions.startUpload'),
+      note: t('actions.startUpload.note', { count: files.length }),
+      keywords: ['upload', 'start', '上传', '执行'],
+      run: () => { void startUpload(); },
+    });
+  }
+
+  if (uploadLogs.length > 0) {
+    actions.push({
+      id: 'logs',
+      title: t('actions.viewLogs'),
+      note: t('actions.viewLogs.note'),
+      keywords: ['log', 'result', '日志', '失败', '成功'],
+      run: () => setLogExpanded(true),
+    });
+  }
+
+  actions.push({
+    id: 'full-setup',
+    title: t('actions.openFullSetup'),
+    note: t('actions.openFullSetup.note'),
+    keywords: ['settings', 'setup', '配置', 'ak', 'sk'],
+    run: () => showSetup(),
+  });
+
+  return actions.map((action, order) => ({ ...action, order }));
+}
+
+function commandActionRecentScore(actionId) {
+  const usage = commandUsageMap[actionId];
+  if (!usage) return 0;
+  const count = Number(usage.count || 0);
+  const lastUsed = Number(usage.lastUsed || 0);
+  if (!count || !lastUsed) return 0;
+
+  const ageHours = Math.max(0, (Date.now() - lastUsed) / (1000 * 60 * 60));
+  const recencyScore = Math.max(0, 72 - ageHours);
+  return count * 30 + recencyScore;
+}
+
+function commandActionMatchScore(action, query) {
+  const keyword = String(query || '').trim().toLowerCase();
+  if (!keyword) return 100;
+
+  const tokens = keyword.split(/\s+/).filter(Boolean);
+  const title = String(action.title || '').toLowerCase();
+  const note = String(action.note || '').toLowerCase();
+  const keywords = Array.isArray(action.keywords) ? action.keywords.join(' ').toLowerCase() : '';
+  const searchable = `${title} ${note} ${keywords} ${action.id}`.trim();
+
+  if (!tokens.every(token => searchable.includes(token))) {
+    return -1;
+  }
+
+  let score = 200;
+  if (title === keyword) score += 120;
+  else if (title.startsWith(keyword)) score += 80;
+  else if (title.includes(keyword)) score += 45;
+  else if (keywords.includes(keyword)) score += 25;
+  else score += 10;
+
+  return score;
+}
+
+function getVisibleCommandPaletteActions() {
+  const query = String(commandPaletteQuery || '').trim();
+  const actions = getCommandPaletteActions();
+  const quickLinkAction = buildQuickLinkPaletteAction(query);
+  const scored = [];
+
+  if (quickLinkAction) {
+    scored.push({
+      ...quickLinkAction,
+      score: 10000,
+    });
+  }
+
+  for (const action of actions) {
+    const matchScore = commandActionMatchScore(action, query);
+    if (matchScore < 0) continue;
+    const recentScore = commandActionRecentScore(action.id);
+    const flowBoost = !query && action.id === nextActionKind ? 220 : 0;
+    scored.push({
+      ...action,
+      score: matchScore + recentScore + flowBoost,
+    });
+  }
+
+  scored.sort((a, b) => {
+    if (b.score !== a.score) return b.score - a.score;
+    return a.order - b.order;
+  });
+
+  return scored;
+}
+
+function commandActionMeta(action) {
+  const usage = commandUsageMap[action.id];
+  if (!usage?.count) return action.note;
+  if (currentLang === 'en') {
+    return `${action.note} · used ${usage.count} times`;
+  }
+  return `${action.note} · 最近 ${usage.count} 次`;
+}
+
+function handleCommandSearchInput() {
+  const input = document.getElementById('command-search');
+  commandPaletteQuery = String(input?.value || '');
+  const quickLinkAction = buildQuickLinkPaletteAction(commandPaletteQuery);
+  if (quickLinkAction) {
+    setCommandSearchStatus(t('actions.quickRecognized', { target: quickLinkAction.note }));
+  } else {
+    setCommandSearchStatus('');
+  }
+  commandPaletteIndex = 0;
+  renderCommandPalette();
+}
+
+function renderCommandPalette() {
+  const list = document.getElementById('command-list');
+  const search = document.getElementById('command-search');
+  if (!list) return;
+  if (search && search.value !== commandPaletteQuery) {
+    search.value = commandPaletteQuery;
+  }
+
+  const actions = getVisibleCommandPaletteActions();
+  commandPaletteVisibleActions = actions;
+  if (!actions.length) {
+    list.innerHTML = `<div class="bucket-list-state">${escapeHtml(t('command.search.empty'))}</div>`;
+    return;
+  }
+
+  if (commandPaletteIndex >= actions.length) {
+    commandPaletteIndex = 0;
+  }
+
+  list.innerHTML = actions.map((action, idx) => `
+    <button type="button" class="command-item ${action.suggested ? 'suggested' : ''} ${idx === commandPaletteIndex ? 'active' : ''}" data-command-index="${idx}">
+      <span class="command-item-title">${escapeHtml(action.title)}</span>
+      <span class="command-item-note">${escapeHtml(commandActionMeta(action))}</span>
+    </button>
+  `).join('');
+
+  for (const btn of list.querySelectorAll('.command-item')) {
+    btn.addEventListener('click', () => {
+      const idx = Number(btn.dataset.commandIndex || 0);
+      runPaletteAction(idx);
+    });
+  }
+
+  const active = list.querySelector('.command-item.active');
+  if (active) {
+    active.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' });
+  }
+}
+
+function setCommandPaletteOpen(open) {
+  if (open && setupModalOpen) {
+    return;
+  }
+
+  commandPaletteOpen = Boolean(open);
+  const overlay = document.getElementById('command-palette');
+  if (!overlay) return;
+  overlay.classList.toggle('open', commandPaletteOpen);
+  if (commandPaletteOpen) {
+    setSetupBucketPickerOpen(false);
+    setPathPickerOpen(false);
+    setManualPathMode(false);
+    hideBucketEditor();
+    commandPaletteQuery = '';
+    commandPaletteIndex = 0;
+    setCommandSearchStatus('');
+    renderCommandPalette();
+    const search = document.getElementById('command-search');
+    search?.focus();
+    search?.select();
+  } else {
+    commandPaletteVisibleActions = [];
+    setCommandSearchStatus('');
+  }
+}
+
+function runPaletteAction(index = commandPaletteIndex) {
+  const actions = commandPaletteVisibleActions.length
+    ? commandPaletteVisibleActions
+    : getVisibleCommandPaletteActions();
+  if (!actions.length) return;
+  const target = actions[index] || actions[0];
+  markCommandActionUsed(target.id);
+  if (!target.keepPaletteOpen) {
+    setCommandPaletteOpen(false);
+  }
+  const result = target.run?.();
+  if (result && typeof result.then === 'function') {
+    result.catch(() => {});
+  }
+}
+
+function bucketOptionLabel(bucket) {
+  return bucket.region ? `${bucket.name} · ${bucket.region}` : bucket.name;
+}
+
+function sortedBuckets() {
+  return [...knownBuckets].sort((a, b) => a.name.localeCompare(b.name, 'en'));
+}
+
+function bucketSearchQuery(kind) {
+  return kind === 'setup' ? setupBucketSearchQuery : inlineBucketSearchQuery;
+}
+
+function setBucketSearchQuery(kind, value) {
+  const normalized = String(value || '');
+  if (kind === 'setup') {
+    setupBucketSearchQuery = normalized;
+  } else {
+    inlineBucketSearchQuery = normalized;
+  }
+}
+
+function filteredBuckets(kind) {
+  const keyword = bucketSearchQuery(kind).trim().toLowerCase();
+  const buckets = sortedBuckets();
+  if (!keyword) {
+    return buckets;
+  }
+
+  return buckets.filter(bucket => {
+    const name = String(bucket.name || '').toLowerCase();
+    const region = normalizeRegion(bucket.region).toLowerCase();
+    return name.includes(keyword) || region.includes(keyword);
+  });
+}
+
+function selectedBucketName(kind) {
+  return kind === 'setup' ? selectedSetupBucketName : selectedInlineBucketName;
+}
+
+function setSelectedBucketName(kind, bucketName) {
+  if (kind === 'setup') {
+    selectedSetupBucketName = String(bucketName || '').trim();
+  } else {
+    selectedInlineBucketName = String(bucketName || '').trim();
+  }
+}
+
+function updateBucketSelectedLabel(kind) {
+  const selectedName = selectedBucketName(kind);
+  const selectedBucket = knownBuckets.find(bucket => bucket.name === selectedName);
+  const text = selectedBucket
+    ? t('bucket.state.selected', { bucket: selectedBucket.name, region: normalizeRegion(selectedBucket.region) })
+    : t('bucket.state.unselected');
+
+  if (kind === 'setup') {
+    const el = document.getElementById('setup-bucket-selected');
+    if (el) el.textContent = text;
+  } else {
+    const el = document.getElementById('bucket-selected');
+    if (el) el.textContent = text;
+  }
+
+  if (kind === 'setup') {
+    updateSetupBucketTrigger();
+  }
+}
+
+function setSetupBucketPickerOpen(open, { focusSearch = false } = {}) {
+  setupBucketPickerOpen = Boolean(open);
+  const dropdown = document.getElementById('setup-bucket-dropdown');
+  const trigger = document.getElementById('setup-bucket-trigger');
+  if (dropdown) {
+    dropdown.classList.toggle('open', setupBucketPickerOpen);
+  }
+  if (trigger) {
+    trigger.classList.toggle('open', setupBucketPickerOpen);
+  }
+  if (setupBucketPickerOpen && focusSearch) {
+    const search = document.getElementById('setup-bucket-search');
+    if (search) search.focus();
+  }
+}
+
+function toggleSetupBucketPicker() {
+  setSetupBucketPickerOpen(!setupBucketPickerOpen, { focusSearch: !setupBucketPickerOpen });
+}
+
+function updateSetupBucketTrigger() {
+  const trigger = document.getElementById('setup-bucket-trigger');
+  if (!trigger) return;
+  const selectedBucket = knownBuckets.find(bucket => bucket.name === selectedSetupBucketName);
+  if (selectedBucket) {
+    trigger.textContent = `${selectedBucket.name} · ${normalizeRegion(selectedBucket.region)}`;
+    return;
+  }
+  if (selectedSetupBucketName) {
+    trigger.textContent = selectedSetupBucketName;
+    return;
+  }
+  trigger.textContent = t('setup.bucket.trigger');
+}
+
+function setPathPickerOpen(open, { focusSearch = false } = {}) {
+  pathPickerOpen = Boolean(open);
+  const dropdown = document.getElementById('path-picker-dropdown');
+  const trigger = document.getElementById('path-picker-trigger');
+  if (pathPickerOpen) {
+    manualPathMode = false;
+    const manualRow = document.getElementById('path-manual-row');
+    const manualBtn = document.getElementById('path-manual-btn');
+    if (manualRow) manualRow.classList.remove('open');
+    if (manualBtn) {
+      manualBtn.classList.remove('active');
+      manualBtn.textContent = t('path.manual');
+    }
+  }
+  if (dropdown) {
+    dropdown.classList.toggle('open', pathPickerOpen);
+  }
+  if (trigger) {
+    trigger.classList.toggle('open', pathPickerOpen);
+  }
+  if (pathPickerOpen && focusSearch) {
+    const search = document.getElementById('path-search');
+    if (search) search.focus();
+  }
+}
+
+function togglePathPicker() {
+  setPathPickerOpen(!pathPickerOpen, { focusSearch: !pathPickerOpen });
+}
+
+function setManualPathMode(open, { focusInput = false } = {}) {
+  manualPathMode = Boolean(open);
+  const row = document.getElementById('path-manual-row');
+  const btn = document.getElementById('path-manual-btn');
+  if (row) {
+    row.classList.toggle('open', manualPathMode);
+  }
+  if (btn) {
+    btn.classList.toggle('active', manualPathMode);
+    btn.textContent = manualPathMode ? t('path.manual.on') : t('path.manual');
+  }
+
+  if (manualPathMode) {
+    setPathPickerOpen(false);
+    if (focusInput) {
+      const input = document.getElementById('path-input');
+      if (input) input.focus();
+    }
+  }
+}
+
+function toggleManualPathMode() {
+  setManualPathMode(!manualPathMode, { focusInput: !manualPathMode });
+}
+
+function updatePathPickerTrigger() {
+  const trigger = document.getElementById('path-picker-trigger');
+  if (!trigger) return;
+  const prefix = currentPrefixRaw();
+  trigger.textContent = prefix || rootPrefixLabel();
+}
+
+function clickInside(target, element) {
+  if (!target || !element) return false;
+  return element === target || element.contains(target);
+}
+
+function elementHasFocus(element) {
+  if (!element) return false;
+  return clickInside(document.activeElement, element);
+}
+
+function confirmBucketSelectionFromKeyboard(kind = 'inline') {
+  const matches = filteredBuckets(kind);
+  if (!matches.length) return false;
+  const selectedName = selectedBucketName(kind);
+  const preferred = matches.find(item => item.name === selectedName)?.name || matches[0].name;
+  if (!preferred) return false;
+
+  if (kind === 'setup') {
+    selectSetupBucket(preferred);
+  } else {
+    selectBucket(preferred, { autoSave: true, collapseSearch: true });
+  }
+  return true;
+}
+
+function filteredPathValuesForSelection() {
+  const keyword = String(document.getElementById('path-search')?.value || '').trim().toLowerCase();
+  const values = [];
+  const rootLabel = rootPrefixLabel();
+  const showRoot = !keyword || rootLabel.toLowerCase().includes(keyword) || '/'.includes(keyword);
+  if (showRoot) {
+    values.push('');
+  }
+  for (const prefix of filteredPrefixes(keyword)) {
+    values.push(prefix);
+  }
+  return values;
+}
+
+function confirmPathSelectionFromKeyboard() {
+  const values = filteredPathValuesForSelection();
+  if (!values.length) return false;
+  const current = currentPrefixRaw();
+  const preferred = values.find(item => item === current) ?? values[0];
+  selectPathPrefix(preferred, {
+    autoSave: true,
+    collapseSearch: true,
+  });
+  return true;
+}
+
+function openTargetSettingsByShortcut() {
+  const targetSection = document.querySelector('.target-section');
+  targetSection?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  setCommandPaletteOpen(!commandPaletteOpen);
+}
+
+function renderBucketList(kind) {
+  const isSetup = kind === 'setup';
+  const list = document.getElementById(isSetup ? 'setup-bucket-list' : 'bucket-list');
+  const searchInput = document.getElementById(isSetup ? 'setup-bucket-search' : 'bucket-search');
+  const selectedValue = selectedBucketName(kind);
+  const loading = isSetup ? setupBucketsLoading : inlineBucketsLoading;
+  const error = isSetup ? setupBucketsError : inlineBucketsError;
+  const query = bucketSearchQuery(kind);
+
+  if (!list) return;
+  if (searchInput && searchInput.value !== query) {
+    searchInput.value = query;
+  }
+
+  if (loading) {
+    list.innerHTML = `<div class="bucket-list-state">${escapeHtml(t('bucket.state.loading'))}</div>`;
+    updateBucketSelectedLabel(kind);
+    return;
+  }
+
+  if (error && !knownBuckets.length) {
+    list.innerHTML = `<div class="bucket-list-state">${escapeHtml(error)}</div>`;
+    updateBucketSelectedLabel(kind);
+    return;
+  }
+
+  if (!knownBuckets.length) {
+    list.innerHTML = `<div class="bucket-list-state">${escapeHtml(isSetup ? t('bucket.state.setupHint') : t('bucket.state.inlineHint'))}</div>`;
+    updateBucketSelectedLabel(kind);
+    return;
+  }
+
+  const matches = filteredBuckets(kind);
+
+  if (!matches.length) {
+    list.innerHTML = `<div class="bucket-list-state">${escapeHtml(t('bucket.state.noMatch'))}</div>`;
+    updateBucketSelectedLabel(kind);
+    return;
+  }
+
+  list.innerHTML = matches.map(bucket => `
+    <button type="button" class="bucket-option ${bucket.name === selectedValue ? 'active' : ''}" data-bucket-name="${escapeHtml(bucket.name)}" data-bucket-kind="${kind}">
+      ${escapeHtml(bucket.name)}
+      <span class="bucket-option-meta">${escapeHtml(normalizeRegion(bucket.region))}</span>
+    </button>
+  `).join('');
+
+  for (const item of list.querySelectorAll('.bucket-option')) {
+    item.addEventListener('click', () => {
+      if (kind === 'setup') {
+        selectSetupBucket(item.dataset.bucketName || '');
+      } else {
+        selectBucket(item.dataset.bucketName || '', { autoSave: true, collapseSearch: true });
+      }
+    });
+  }
+
+  updateBucketSelectedLabel(kind);
+}
+
+function handleBucketSearchInput(kind) {
+  const isSetup = kind === 'setup';
+  const input = document.getElementById(isSetup ? 'setup-bucket-search' : 'bucket-search');
+  setBucketSearchQuery(kind, input?.value || '');
+  renderBucketList(kind);
+}
+
+function selectBucket(bucketName, { autoSave = false, collapseSearch = false } = {}) {
+  const selectedBucket = knownBuckets.find(bucket => bucket.name === bucketName);
+  setSelectedBucketName('inline', bucketName);
+  if (selectedBucket) {
+    updateBucketStatus(t('bucket.status.willSwitch', {
+      bucket: selectedBucket.name,
+      region: normalizeRegion(selectedBucket.region),
+    }));
+  } else {
+    updateBucketStatus('');
+  }
+
+  if (collapseSearch) {
+    setBucketSearchQuery('inline', '');
+    const search = document.getElementById('bucket-search');
+    if (search) {
+      search.value = '';
+      search.blur();
+    }
+  }
+
+  renderBucketList('inline');
+
+  if (autoSave && selectedBucket) {
+    void saveBucket(bucketName, { auto: true });
+  }
+}
+
+function fillSetupForm() {
+  setupField('setup-ak').value = '';
+  setupField('setup-sk').value = '';
+  selectedSetupBucketName = config.bucket || '';
+  setupBucketSearchQuery = '';
+  setSetupBucketPickerOpen(false);
+  setupField('setup-region').value = config.region || 'oss-cn-hongkong';
+  syncSetupRegionLock();
+  const help = document.getElementById('setup-bucket-help');
+  if (help) {
+    help.textContent = t('bucket.help.default');
+  }
+}
+
+function setSetupModalOpen(open, { locked = false, focusField = false } = {}) {
+  setupModalOpen = Boolean(open);
+  setupModalLocked = setupModalOpen ? Boolean(locked) : false;
+
+  const modal = document.getElementById('setup-modal');
+  if (modal) {
+    modal.classList.toggle('open', setupModalOpen);
+  }
+
+  if (!setupModalOpen) {
+    setResetConfirmOpen(false);
+    setSetupBucketPickerOpen(false);
+    return;
+  }
+
+  if (focusField) {
+    const input = setupField('setup-ak') || setupField('setup-sk');
+    input?.focus();
+  }
+}
+
+function setResetConfirmOpen(open) {
+  resetConfirmOpen = Boolean(open);
+  const modal = document.getElementById('reset-confirm-modal');
+  if (modal) {
+    modal.classList.toggle('open', resetConfirmOpen);
+  }
+
+  if (!resetConfirmOpen) return;
+
+  setCommandPaletteOpen(false);
+  const confirmBtn = document.getElementById('btn-reset-confirm');
+  confirmBtn?.focus();
+}
+
+function openResetConfirm() {
+  if (setupModalLocked) return;
+  setResetConfirmOpen(true);
+}
+
+function showSetup(isFirstRun = false) {
+  setCommandPaletteOpen(false);
+  hideBucketEditor();
+  setPathPickerOpen(false);
+  fillSetupForm();
+  const locked = Boolean(isFirstRun || !config?.hasOssConfig);
+  setSetupModalOpen(true, { locked, focusField: true });
+  document.getElementById('btn-cancel-setup').style.display = locked ? 'none' : 'inline-flex';
+  document.getElementById('btn-reset-app').style.display = locked ? 'none' : 'inline-flex';
+  renderBucketList('setup');
+  updateSetupStatus(locked ? t('setup.firstRunPrompt') : '');
+}
+
+function hideSetup(options = {}) {
+  const force = Boolean(options?.force);
+  if (setupModalLocked && !force) return;
+  setCommandPaletteOpen(false);
+  setResetConfirmOpen(false);
+  setSetupModalOpen(false);
+  updateSetupStatus('');
+}
+
+function setupCredentialPayload() {
+  return {
+    accessKeyId: setupField('setup-ak').value.trim(),
+    accessKeySecret: setupField('setup-sk').value.trim(),
+    region: normalizeRegion(setupField('setup-region').value.trim()),
+  };
+}
+
+function canPreviewSetupBuckets() {
+  const payload = setupCredentialPayload();
+  return Boolean(payload.accessKeyId && payload.accessKeySecret);
+}
+
+function syncSetupRegionLock() {
+  const regionInput = setupField('setup-region');
+  if (!regionInput) return;
+
+  const selectedBucket = knownBuckets.find(bucket => bucket.name === selectedSetupBucketName);
+  if (selectedBucket?.region) {
+    regionInput.value = normalizeRegion(selectedBucket.region);
+    regionInput.disabled = true;
+    regionInput.title = t('setup.region.locked');
+  } else {
+    regionInput.disabled = false;
+    regionInput.title = '';
+  }
+}
+
+function renderSetupBucketHelp() {
+  const help = document.getElementById('setup-bucket-help');
+  if (!help) return;
+
+  if (!canPreviewSetupBuckets()) {
+    help.textContent = t('bucket.help.fillCredentials');
+    return;
+  }
+
+  if (setupBucketsLoading) {
+    help.textContent = t('bucket.help.loading');
+    return;
+  }
+
+  if (setupBucketsError) {
+    help.textContent = setupBucketsError;
+    return;
+  }
+
+  help.textContent = knownBuckets.length
+    ? t('bucket.help.loaded', { count: knownBuckets.length })
+    : t('bucket.help.empty');
+
+  const regionInput = setupField('setup-region');
+  if (regionInput?.disabled) {
+    help.textContent += t('bucket.help.regionLocked');
+  }
+}
+
+function selectSetupBucket(bucketName) {
+  const selectedBucket = knownBuckets.find(bucket => bucket.name === bucketName);
+  setSelectedBucketName('setup', bucketName);
+  if (selectedBucket) {
+    setupField('setup-region').value = normalizeRegion(selectedBucket.region);
+  }
+  setBucketSearchQuery('setup', '');
+  const search = document.getElementById('setup-bucket-search');
+  if (search) search.value = '';
+  setSetupBucketPickerOpen(false);
+  syncSetupRegionLock();
+  renderSetupBucketHelp();
+  renderBucketList('setup');
+}
+
+async function refreshSetupBuckets() {
+  const requestId = ++setupBucketPreviewRequestId;
+  if (!canPreviewSetupBuckets()) {
+    knownBuckets = [];
+    setupBucketsLoading = false;
+    setupBucketsError = '';
+    syncSetupRegionLock();
+    renderSetupBucketHelp();
+    renderBucketList('setup');
+    return { ok: false };
+  }
+
+  try {
+    setupBucketsLoading = true;
+    setupBucketsError = '';
+    renderSetupBucketHelp();
+    renderBucketList('setup');
+
+    const payload = setupCredentialPayload();
+    knownBuckets = await backendListBucketsPreview(payload);
+    if (requestId !== setupBucketPreviewRequestId) {
+      return { ok: false, stale: true };
+    }
+    setupBucketsLoading = false;
+    setupBucketsError = '';
+    syncSetupRegionLock();
+    renderSetupBucketHelp();
+    renderBucketList('setup');
+    return { ok: true };
+  } catch (e) {
+    if (requestId !== setupBucketPreviewRequestId) {
+      return { ok: false, stale: true };
+    }
+    knownBuckets = [];
+    setupBucketsLoading = false;
+    setupBucketsError = errorText(e, t('bucket.error.loadFailed'));
+    syncSetupRegionLock();
+    renderSetupBucketHelp();
+    renderBucketList('setup');
+    return { ok: false, error: errorText(e) };
+  }
+}
+
+function handleSetupCredentialInput() {
+  if (setupBucketRefreshTimer) {
+    clearTimeout(setupBucketRefreshTimer);
+  }
+
+  setupBucketRefreshTimer = setTimeout(() => {
+    refreshSetupBuckets();
+  }, 250);
+
+  renderSetupBucketHelp();
+  renderBucketList('setup');
+}
+
+function showBucketEditor() {
+  const panel = document.getElementById('bucket-inline');
+  if (!panel) return;
+
+  if (panel.classList.contains('open')) {
+    hideBucketEditor();
+    return;
+  }
+
+  selectedInlineBucketName = config.bucket || '';
+  inlineBucketSearchQuery = '';
+  panel.classList.add('open');
+  updateBucketStatus('');
+  if (!knownBuckets.length) {
+    refreshBuckets();
+  } else {
+    renderBucketList('inline');
+  }
+  const search = document.getElementById('bucket-search');
+  if (search) search.focus();
+  updateNextAction();
+}
+
+function hideBucketEditor() {
+  const panel = document.getElementById('bucket-inline');
+  if (!panel) return;
+  panel.classList.remove('open');
+  inlineBucketSearchQuery = '';
+  const search = document.getElementById('bucket-search');
+  if (search) {
+    search.value = '';
+    search.blur();
+  }
+  updateBucketStatus('');
+}
+
+async function saveBucket(bucketName = selectedInlineBucketName, { auto = false } = {}) {
+  if (bucketSaving) return;
+
+  const nextBucket = String(bucketName || '').trim();
+  const selectedBucket = knownBuckets.find(bucket => bucket.name === nextBucket);
+
+  if (!nextBucket) {
+    updateBucketStatus(t('bucket.status.chooseFirst'), true);
+    return;
+  }
+
+  if (
+    auto
+    && config.bucket === nextBucket
+    && (!selectedBucket?.region || normalizeRegion(selectedBucket.region) === normalizeRegion(config.region))
+  ) {
+    hideBucketEditor();
+    return;
+  }
+
+  bucketSaving = true;
+  updateBucketStatus(t('bucket.status.saving'));
+
+  try {
+    const payload = {
+      bucket: nextBucket,
+    };
+
+    if (selectedBucket?.region) {
+      payload.region = normalizeRegion(selectedBucket.region);
+    }
+
+    const data = await backendSaveConfig(payload);
+    config = data.config;
+    updateHeader();
+    showUploader();
+    await refreshBuckets();
+    await refreshPrefixes(config.prefix);
+    updateBucketStatus(t('bucket.status.switched', { bucket: config.bucket }));
+    hideBucketEditor();
+  } catch (e) {
+    updateBucketStatus(errorText(e, t('bucket.status.switchFailed')), true);
+  } finally {
+    bucketSaving = false;
+  }
+}
+
+async function saveSetup() {
+  const saveButton = document.getElementById('btn-save-setup');
+  const payload = {
+    accessKeyId: setupField('setup-ak').value.trim(),
+    accessKeySecret: setupField('setup-sk').value.trim(),
+    bucket: selectedSetupBucketName.trim(),
+    region: normalizeRegion(setupField('setup-region').value.trim()),
+  };
+  const selectedBucket = knownBuckets.find(bucket => bucket.name === payload.bucket);
+
+  if (selectedBucket?.region) {
+    payload.region = normalizeRegion(selectedBucket.region);
+  }
+
+  if ((!config.hasOssConfig && !payload.accessKeyId) || (!config.hasOssConfig && !payload.accessKeySecret)) {
+    updateSetupStatus(t('setup.required'), true);
+    return;
+  }
+
+  saveButton.disabled = true;
+  updateSetupStatus(t('setup.saving'));
+
+  try {
+    const data = await backendSaveConfig(payload);
+    config = data.config;
+    updateHeader();
+    hideSetup({ force: true });
+    showUploader();
+    await refreshBuckets();
+    if (String(config.bucket || '').trim()) {
+      await refreshPrefixes(config.prefix);
+    }
+    updateSetupStatus(t('setup.saved'));
+  } catch (e) {
+    updateSetupStatus(errorText(e, t('setup.saveFailed')), true);
+  } finally {
+    saveButton.disabled = false;
+  }
+}
+
+async function resetAppConfigWithConfirm() {
+  if (setupModalLocked) return;
+  if (!resetConfirmOpen) return;
+
+  const resetButton = document.getElementById('btn-reset-app');
+  const confirmButton = document.getElementById('btn-reset-confirm');
+  const cancelButton = document.getElementById('btn-reset-cancel');
+  if (resetButton) resetButton.disabled = true;
+  if (confirmButton) confirmButton.disabled = true;
+  if (cancelButton) cancelButton.disabled = true;
+  updateSetupStatus(t('setup.reset.running'));
+
+  try {
+    const data = await backendResetConfig();
+    setResetConfirmOpen(false);
+    config = data.config;
+    updateHeader();
+
+    // 清空运行时状态，进入首次配置流程
+    files = [];
+    uploadLogs = [];
+    knownBuckets = [];
+    knownPrefixes = [];
+    selectedSetupBucketName = '';
+    selectedInlineBucketName = '';
+    setupBucketSearchQuery = '';
+    inlineBucketSearchQuery = '';
+    prefixesLoading = false;
+    prefixesError = '';
+    prefixLoadStats = normalizePathStats(null);
+    prefixCacheByBucket.clear();
+    safeWriteLocalStorage(PREFIX_CACHE_STORAGE_KEY, JSON.stringify({}));
+    render();
+    renderUploadLogs();
+
+    const uploader = document.getElementById('uploader');
+    if (uploader) {
+      uploader.style.display = 'none';
+    }
+
+    showSetup(true);
+    updateSetupStatus(`${t('setup.reset.done')} ${t('setup.firstRunPrompt')}`);
+  } catch (e) {
+    updateSetupStatus(errorText(e, t('setup.reset.failed')), true);
+  } finally {
+    if (resetButton) resetButton.disabled = false;
+    if (confirmButton) confirmButton.disabled = false;
+    if (cancelButton) cancelButton.disabled = false;
+  }
+}
+
+async function init() {
+  currentLang = loadLanguagePreference();
+  applyI18nStatic();
+  const headerMeta = document.getElementById('header-meta');
+  if (headerMeta) headerMeta.textContent = t('header.connecting');
+  commandUsageMap = loadCommandUsageStore();
+  setRecentPathBookmarks(readRecentPathBookmarksStore(), { persist: true, rerender: false });
+  await setupTauriNativeDropListener();
+  try {
+    config = await backendGetConfig();
+    updateHeader();
+    if (config.hasOssConfig) {
+      showUploader();
+      await refreshBuckets();
+      if (String(config.bucket || '').trim()) {
+        await refreshPrefixes(config.prefix);
+      }
+    } else {
+      showSetup(true);
+    }
+  } catch(e) {
+    document.getElementById('header-meta').textContent = t('header.connectionFailed');
+  }
+}
+
+function showUploader() {
+  setCommandPaletteOpen(false);
+  setPathPickerOpen(false);
+  setManualPathMode(false);
+  setLogExpanded(false);
+  document.getElementById('uploader').style.display = 'flex';
+  const info = document.getElementById('bucket-info');
+  info.innerHTML = `
+    <div class="card-sub">${escapeHtml(t('bucket.card.title'))}</div>
+    <div class="bucket-row">
+      <button type="button" class="selector-trigger bucket-switch-trigger" onclick="showBucketEditor()">
+        ${escapeHtml(config.bucket || '-')} · ${escapeHtml(config.region || '-')}
+      </button>
+      <span class="card-status state-ready" id="bucket-card-status">${escapeHtml(t('bucket.card.available'))}</span>
+      <div class="bucket-actions">
+        <button class="btn-secondary" onclick="showSetup()">${escapeHtml(t('bucket.card.fullSetup'))}</button>
+      </div>
+    </div>
+    <div class="bucket-inline" id="bucket-inline">
+      <div class="bucket-picker">
+        <input class="bucket-search" type="text" id="bucket-search" placeholder="${escapeHtml(t('setup.bucket.search.placeholder'))}" oninput="handleBucketSearchInput('inline')" autocapitalize="off" autocorrect="off" spellcheck="false" autocomplete="off">
+        <div class="setup-field-help" id="bucket-selected">${escapeHtml(t('bucket.state.unselected'))}</div>
+        <div class="bucket-list" id="bucket-list"></div>
+      </div>
+      <span class="bucket-status" id="bucket-status"></span>
+      <div class="bucket-help">${escapeHtml(t('bucket.help.inline'))}</div>
+    </div>
+  `;
+  updatePathPreview();
+  if (!String(config.bucket || '').trim()) {
+    prefixesLoading = false;
+    prefixesError = '';
+    knownPrefixes = [];
+    prefixLoadStats = normalizePathStats(null);
+    renderPathList('');
+    setPathState(t('path.state.needBucket'), true);
+  }
+  render();
+  renderUploadLogs();
+  updateFlowStepState();
+}
+
+async function refreshBuckets() {
+  try {
+    inlineBucketsLoading = true;
+    inlineBucketsError = '';
+    setCardStatus('bucket-card-status', 'loading');
+    renderBucketList('inline');
+    const data = await backendListBuckets();
+    knownBuckets = Array.isArray(data.buckets) ? data.buckets : [];
+    if (!knownBuckets.find(bucket => bucket.name === selectedInlineBucketName)) {
+      selectedInlineBucketName = config.bucket || '';
+    }
+    if (!knownBuckets.find(bucket => bucket.name === selectedSetupBucketName)) {
+      selectedSetupBucketName = config.bucket || '';
+    }
+    inlineBucketsLoading = false;
+    inlineBucketsError = '';
+    setCardStatus('bucket-card-status', 'ready');
+    renderBucketList('inline');
+    updateFlowStepState();
+    return { ok: true };
+  } catch (e) {
+    knownBuckets = [];
+    inlineBucketsLoading = false;
+    inlineBucketsError = errorText(e, t('bucket.error.loadFailed'));
+    setCardStatus('bucket-card-status', 'error');
+    renderBucketList('inline');
+    updateFlowStepState();
+    return { ok: false, error: errorText(e) };
+  }
+}
+
+function setPathState(message, isError = false) {
+  const state = document.getElementById('path-state');
+  if (!state) return;
+  const meta = document.getElementById('path-meta');
+  let mode = 'ready';
+  if (prefixesLoading) mode = 'loading';
+  else if (isError) mode = 'error';
+  else if (prefixLoadStats.failedParents.length > 0) mode = 'partial';
+  setCardStatus('path-state', mode);
+  if (meta) {
+    meta.textContent = message || t('path.state.normal');
+  }
+  updateFlowStepState();
+}
+
+function uniqueSortedPrefixes(prefixes) {
+  return Array.from(new Set(
+    (prefixes || [])
+      .map(item => String(item || '').trim())
+      .filter(Boolean)
+  )).sort((a, b) => a.localeCompare(b, 'zh-Hans-CN'));
+}
+
+function filteredPrefixes(query = '') {
+  const keyword = String(query || '').trim().toLowerCase();
+  if (!keyword) return knownPrefixes;
+  return knownPrefixes.filter(prefix => prefix.toLowerCase().includes(keyword));
+}
+
+function renderPathList(query = '') {
+  const list = document.getElementById('path-list');
+  const searchInput = document.getElementById('path-search');
+  const current = currentPrefixRaw();
+  const keyword = query || searchInput?.value || '';
+
+  if (!list) return;
+
+  if (prefixesLoading) {
+    list.innerHTML = `<div class="bucket-list-state">${escapeHtml(t('path.state.loadingList'))}</div>`;
+    return;
+  }
+
+  if (prefixesError && !knownPrefixes.length) {
+    list.innerHTML = `<div class="bucket-list-state">${escapeHtml(prefixesError)}</div>`;
+    return;
+  }
+
+  const prefixItems = filteredPrefixes(keyword);
+  const rootLabel = rootPrefixLabel();
+  const showRoot = !keyword || rootLabel.toLowerCase().includes(keyword.toLowerCase()) || '/'.includes(keyword);
+
+  const items = [];
+  if (showRoot) {
+    items.push({
+      value: '',
+      label: rootLabel,
+      meta: t('path.item.root.meta'),
+      active: current === '',
+    });
+  }
+
+  for (const prefix of prefixItems) {
+    items.push({
+      value: prefix,
+      label: prefix,
+      meta: t('path.item.fromBucket'),
+      active: prefix === current,
+    });
+  }
+
+  if (!items.length) {
+    list.innerHTML = `<div class="bucket-list-state">${escapeHtml(t('path.state.searchEmpty'))}</div>`;
+    return;
+  }
+
+  list.innerHTML = items.map(item => `
+    <button type="button" class="path-option ${item.active ? 'active' : ''}" data-path-prefix="${escapeHtml(item.value)}">
+      ${escapeHtml(item.label)}
+      <span class="path-option-meta">${escapeHtml(item.meta)}</span>
+    </button>
+  `).join('');
+
+  for (const button of list.querySelectorAll('.path-option')) {
+    button.addEventListener('click', () => {
+      selectPathPrefix(button.dataset.pathPrefix || '', {
+        autoSave: true,
+        collapseSearch: true,
+      });
+    });
+  }
+}
+
+function selectPathPrefix(prefix, { autoSave = false, collapseSearch = false } = {}) {
+  const input = document.getElementById('path-input');
+  if (!input) return;
+  const normalized = String(prefix || '').trim();
+  input.value = normalized;
+
+  if (collapseSearch) {
+    const search = document.getElementById('path-search');
+    if (search) {
+      search.value = '';
+      search.blur();
+    }
+    setPathPickerOpen(false);
+    setManualPathMode(false);
+  }
+
+  updatePathPreview();
+  renderPathList(document.getElementById('path-search')?.value || '');
+
+  if (autoSave) {
+    void saveSelectedPrefix(normalized);
+  }
+}
+
+function handlePathSearchInput() {
+  renderPathList(document.getElementById('path-search')?.value || '');
+}
+
+function handlePathInputChange() {
+  updatePathPreview();
+  renderPathList();
+}
+
+function normalizePathStats(stats) {
+  const safe = (stats && typeof stats === 'object') ? stats : {};
+  const failedParents = Array.isArray(safe.failedParents) ? safe.failedParents.map(item => String(item || '')) : [];
+  return {
+    visited: Number.isFinite(Number(safe.visited)) ? Number(safe.visited) : 0,
+    fallbackHits: Number.isFinite(Number(safe.fallbackHits)) ? Number(safe.fallbackHits) : 0,
+    failedParents,
+    truncated: Boolean(safe.truncated),
+  };
+}
+
+function pathStatusSummary(total, { fromCache = false } = {}) {
+  const stats = prefixLoadStats;
+  const failedCount = stats.failedParents.length;
+  if (failedCount === 0) {
+    const fallback = stats.fallbackHits > 0 ? t('path.summary.fallback', { count: stats.fallbackHits }) : '';
+    const truncated = stats.truncated ? t('path.summary.truncated') : '';
+    const cache = fromCache ? t('path.summary.cache') : '';
+    return {
+      message: t('path.summary.full', {
+        total,
+        visited: stats.visited,
+        fallback,
+        truncated,
+        cache,
+      }),
+      isError: false,
+    };
+  }
+
+  if (total > 0) {
+    const fallback = stats.fallbackHits > 0 ? t('path.summary.fallback', { count: stats.fallbackHits }) : '';
+    const truncated = stats.truncated ? t('path.summary.truncated') : '';
+    return {
+      message: t('path.summary.partial', {
+        total,
+        failed: failedCount,
+        fallback,
+        truncated,
+      }),
+      isError: false,
+    };
+  }
+
+  return { message: t('path.summary.failed'), isError: true };
+}
+
+function applyLoadedPrefixes(data, preferredPrefix, keepCurrentInput, fromCache = false) {
+  knownPrefixes = uniqueSortedPrefixes(data.prefixes || []);
+  prefixesError = '';
+  prefixLoadStats = normalizePathStats(data.stats);
+
+  const input = document.getElementById('path-input');
+  if (input) {
+    const desired = keepCurrentInput
+      ? currentPrefixRaw()
+      : String(preferredPrefix ?? data.defaultPrefix ?? config.prefix ?? '').trim();
+    if (desired || !keepCurrentInput) {
+      input.value = desired;
+    }
+  }
+
+  renderPathList(document.getElementById('path-search')?.value || '');
+  updatePathPreview();
+
+  const summary = pathStatusSummary(knownPrefixes.length, { fromCache });
+  setPathState(summary.message, summary.isError);
+
+  return {
+    ok: !summary.isError,
+    total: knownPrefixes.length,
+    truncated: prefixLoadStats.truncated,
+    failedParents: prefixLoadStats.failedParents.length,
+    fromCache,
+  };
+}
+
+async function loadPrefixes(preferredPrefix = '', keepCurrentInput = false, forceReload = false) {
+  const cacheKey = currentBucketCacheKey();
+  const cached = getCachedPrefixes(cacheKey);
+  if (!forceReload && cached) {
+    prefixesLoading = false;
+    return applyLoadedPrefixes(cached, preferredPrefix, keepCurrentInput, true);
+  }
+
+  prefixesLoading = true;
+  prefixesError = '';
+  prefixLoadStats = normalizePathStats(null);
+  knownPrefixes = [];
+  renderPathList();
+  setPathState(t('path.state.loadAll'));
+
+  try {
+    const data = await backendListAllPrefixes();
+    const cachedPayload = {
+      prefixes: uniqueSortedPrefixes(data.prefixes || []),
+      defaultPrefix: String(data.defaultPrefix || config.prefix || ''),
+      stats: normalizePathStats(data.stats),
+    };
+    persistPrefixCache(cacheKey, cachedPayload);
+    prefixesLoading = false;
+    return applyLoadedPrefixes(getCachedPrefixes(cacheKey), preferredPrefix, keepCurrentInput, false);
+  } catch (e) {
+    prefixesLoading = false;
+    prefixesError = errorText(e, t('path.state.loadFailedManual'));
+    if (cached) {
+      return applyLoadedPrefixes(cached, preferredPrefix, keepCurrentInput, true);
+    }
+    prefixLoadStats = normalizePathStats(null);
+    knownPrefixes = [];
+    renderPathList();
+    updatePathPreview();
+    setPathState(t('path.state.loadFailedManual'), true);
+    return { ok: false, error: prefixesError };
+  }
+}
+
+async function refreshPrefixes(preferredPrefix = config.prefix || '', forceReload = false) {
+  if (!String(config.bucket || '').trim()) {
+    prefixesLoading = false;
+    prefixesError = '';
+    knownPrefixes = [];
+    prefixLoadStats = normalizePathStats(null);
+    renderPathList('');
+    setPathState(t('path.state.needBucket'), true);
+    return { ok: false, reason: 'bucket-missing' };
+  }
+
+  const searchInput = document.getElementById('path-search');
+  if (searchInput) searchInput.value = '';
+  setPathPickerOpen(false);
+  const desired = String(preferredPrefix ?? config.prefix ?? '').trim();
+  if (forceReload) {
+    return loadPrefixes(desired, false, true);
+  }
+
+  const cached = getCachedPrefixes(currentBucketCacheKey());
+  if (cached) {
+    applyLoadedPrefixes(cached, desired, false, true);
+    setPathState(t('path.state.cacheWarm'));
+    void loadPrefixes(desired, false, true);
+    return { ok: true, fromCache: true, backgroundRefreshing: true };
+  }
+
+  return loadPrefixes(desired, false, false);
+}
+
+async function manualRefreshPrefixes() {
+  if (!String(config.bucket || '').trim()) {
+    setPathState(t('path.state.needBucket'), true);
+    return;
+  }
+  const searchInput = document.getElementById('path-search');
+  if (searchInput) searchInput.value = '';
+  await loadPrefixes(currentPrefixRaw() || config.prefix || '', true, true);
+}
+
+async function saveSelectedPrefix(prefix) {
+  if (String(prefix || '').trim() === String(config.prefix || '').trim()) {
+    return;
+  }
+
+  const requestId = ++pathSaveRequestId;
+
+  try {
+    const data = await backendSaveConfig({ prefix });
+    if (requestId !== pathSaveRequestId) {
+      return;
+    }
+    config = data.config;
+    updateHeader();
+    setStatus(t('path.state.saveOk', { prefix: prefix || rootPrefixLabel() }));
+  } catch (e) {
+    if (requestId !== pathSaveRequestId) {
+      return;
+    }
+    setStatus(t('path.state.saveFail', { reason: errorText(e, t('common.retry')) }));
+  }
+}
+
+function currentPrefixRaw() {
+  return String(document.getElementById('path-input').value || '').trim();
+}
+
+function baseNameFromPath(localPath) {
+  const raw = String(localPath || '').trim();
+  if (!raw) return '';
+  const normalized = raw.replace(/\\/g, '/');
+  const parts = normalized.split('/').filter(Boolean);
+  return parts[parts.length - 1] || raw;
+}
+
+function createLocalPathEntry(localPath) {
+  const pathValue = String(localPath || '').trim();
+  if (!pathValue) return null;
+  return {
+    name: baseNameFromPath(pathValue) || pathValue,
+    size: 0,
+    localPath: pathValue,
+    type: '',
+  };
+}
+
+function currentBucketCacheKey() {
+  const bucket = String(config.bucket || '').trim();
+  const region = String(config.region || '').trim();
+  return `${region}::${bucket}`;
+}
+
+function updatePathPreview() {
+  const preview = document.getElementById('path-preview');
+  const prefix = currentPrefixRaw();
+  preview.textContent = t('path.preview.current', { prefix: prefix || rootPrefixLabel() });
+  updatePathPickerTrigger();
+}
+
+function handleFiles(newFiles) {
+  for (const item of Array.from(newFiles || [])) {
+    if (!item) continue;
+
+    if (item.localPath) {
+      if (!files.find(x => x.localPath && x.localPath === item.localPath)) {
+        files.push(item);
+      }
+      continue;
+    }
+
+    if (!files.find(x => !x.localPath && x.name === item.name && x.size === item.size)) {
+      files.push(item);
+    }
+  }
+  render();
+}
+
+function removeFile(i) { files.splice(i, 1); render(); }
+
+function render() {
+  const el = document.getElementById('file-list');
+  const header = `
+    <div class="file-head">
+      <span>${escapeHtml(t('file.col.index'))}</span>
+      <span>${escapeHtml(t('file.col.name'))}</span>
+      <span style="text-align:right">${escapeHtml(t('file.col.size'))}</span>
+      <span style="text-align:center">${escapeHtml(t('file.col.status'))}</span>
+      <span></span>
+    </div>
+  `;
+  const rows = files.map((f, i) => `
+    <div class="file-item">
+      <span class="file-num">${String(i+1).padStart(2,'0')}</span>
+      <span class="file-name">${f.name}</span>
+      <span class="file-size">${Number(f.size || 0) > 0 ? fmt(Number(f.size || 0)) : '-'}</span>
+      <span class="file-status" id="st-${i}"></span>
+      <span class="file-remove" onclick="removeFile(${i})">×</span>
+    </div>
+  `).join('');
+  const empty = files.length === 0 ? `<div class="file-empty">${escapeHtml(t('file.empty'))}</div>` : '';
+  el.innerHTML = header + rows + empty;
+  document.getElementById('btn-upload').disabled = files.length === 0;
+  updateFlowStepState();
+}
+
+function fmt(n) {
+  if (n < 1024) return n + ' B';
+  if (n < 1048576) return (n/1024).toFixed(1) + ' KB';
+  return (n/1048576).toFixed(2) + ' MB';
+}
+
+const dz = document.getElementById('drop-zone');
+const fileInput = document.getElementById('file-input');
+let dragDepth = 0;
+let dragLeaveTimer = null;
+
+function extractTauriDropPaths(payload) {
+  if (!payload) return [];
+  if (Array.isArray(payload)) {
+    return payload.map(item => String(item || '').trim()).filter(Boolean);
+  }
+  if (Array.isArray(payload.paths)) {
+    return payload.paths.map(item => String(item || '').trim()).filter(Boolean);
+  }
+  return [];
+}
+
+function handleNativePathDrop(paths) {
+  const entries = paths
+    .map(createLocalPathEntry)
+    .filter(Boolean);
+
+  if (!entries.length) {
+    return;
+  }
+
+  handleFiles(entries);
+  setStatus(t('upload.addedLocal', { count: entries.length }));
+}
+
+async function setupTauriNativeDropListener() {
+  if (tauriDropListenerReady || !isTauriRuntime()) {
+    return;
+  }
+
+  const eventApi = window.__TAURI__?.event;
+  if (!eventApi?.listen) {
+    return;
+  }
+
+  const dropEventNames = ['tauri://drag-drop', 'tauri://file-drop'];
+  const leaveEventNames = ['tauri://drag-leave', 'tauri://drag-drop-cancelled', 'tauri://file-drop-cancelled'];
+  let boundCount = 0;
+
+  for (const eventName of dropEventNames) {
+    try {
+      await eventApi.listen(eventName, event => {
+        const paths = extractTauriDropPaths(event.payload);
+        if (paths.length > 0) {
+          handleNativePathDrop(paths);
+          dragDepth = 0;
+          dz?.classList.remove('drag');
+        }
+      });
+      boundCount += 1;
+    } catch (_) {
+      // 忽略当前事件名不可用，继续尝试其他名称
+    }
+  }
+
+  for (const eventName of leaveEventNames) {
+    try {
+      await eventApi.listen(eventName, () => {
+        if (dragLeaveTimer) {
+          clearTimeout(dragLeaveTimer);
+          dragLeaveTimer = null;
+        }
+        dragDepth = 0;
+        dz?.classList.remove('drag');
+      });
+      boundCount += 1;
+    } catch (_) {
+      // 忽略当前事件名不可用
+    }
+  }
+
+  tauriDropListenerReady = boundCount > 0;
+}
+
+function handleDragEnter(e) {
+  if (!hasFilePayload(e)) return;
+  e.preventDefault();
+  if (dragLeaveTimer) {
+    clearTimeout(dragLeaveTimer);
+    dragLeaveTimer = null;
+  }
+  dragDepth += 1;
+  dz?.classList.add('drag');
+}
+
+function handleDragOver(e) {
+  if (!hasFilePayload(e)) return;
+  e.preventDefault();
+  if (e.dataTransfer) {
+    e.dataTransfer.dropEffect = 'copy';
+  }
+}
+
+function handleDragLeave(e) {
+  if (!hasFilePayload(e)) return;
+  e.preventDefault();
+  dragDepth = Math.max(0, dragDepth - 1);
+  if (dragDepth !== 0) return;
+
+  if (dragLeaveTimer) {
+    clearTimeout(dragLeaveTimer);
+  }
+  dragLeaveTimer = setTimeout(() => {
+    dz?.classList.remove('drag');
+    dragLeaveTimer = null;
+  }, 80);
+}
+
+async function handleDropFiles(e) {
+  if (!hasFilePayload(e)) return;
+  e.preventDefault();
+  e.stopPropagation();
+  if (dragLeaveTimer) {
+    clearTimeout(dragLeaveTimer);
+    dragLeaveTimer = null;
+  }
+  dragDepth = 0;
+  dz?.classList.remove('drag');
+
+  const droppedFiles = await extractDroppedFiles(e.dataTransfer);
+  if (droppedFiles.length > 0) {
+    handleFiles(droppedFiles);
+    setStatus(t('upload.addedFiles', { count: droppedFiles.length }));
+    return;
+  }
+
+  const uriListRaw = String(e.dataTransfer?.getData?.('text/uri-list') || '').trim();
+  if (uriListRaw) {
+    const localPaths = uriListRaw
+      .split('\n')
+      .map(line => line.trim())
+      .filter(line => line && !line.startsWith('#') && line.startsWith('file://'))
+      .map(line => decodeURIComponent(line.replace(/^file:\/\//, '')))
+      .map(line => {
+        if (/^\/[A-Za-z]:\//.test(line)) {
+          return line.slice(1);
+        }
+        return line;
+      })
+      .filter(Boolean);
+    if (localPaths.length > 0) {
+      handleNativePathDrop(localPaths);
+      return;
+    }
+  }
+
+  setStatus(t('upload.dropFailed'));
+}
+
+window.addEventListener('dragenter', handleDragEnter);
+window.addEventListener('dragover', handleDragOver);
+window.addEventListener('dragleave', handleDragLeave);
+window.addEventListener('drop', handleDropFiles);
+
+dz?.addEventListener('dragenter', handleDragEnter);
+dz?.addEventListener('dragover', handleDragOver);
+dz?.addEventListener('dragleave', handleDragLeave);
+dz?.addEventListener('drop', handleDropFiles);
+dz?.addEventListener('click', () => fileInput?.click());
+
+document.addEventListener('click', event => {
+  const resetConfirmModal = document.getElementById('reset-confirm-modal');
+  const resetConfirmPanel = document.getElementById('reset-confirm-panel');
+  if (
+    resetConfirmOpen
+    && clickInside(event.target, resetConfirmModal)
+    && !clickInside(event.target, resetConfirmPanel)
+  ) {
+    setResetConfirmOpen(false);
+    return;
+  }
+
+  const setupModal = document.getElementById('setup-modal');
+  const setupPanel = document.getElementById('setup-panel');
+  if (
+    setupModalOpen
+    && clickInside(event.target, setupModal)
+    && !clickInside(event.target, setupPanel)
+  ) {
+    hideSetup();
+    return;
+  }
+
+  const commandOverlay = document.getElementById('command-palette');
+  const commandPanel = document.querySelector('.command-panel');
+  if (
+    commandPaletteOpen
+    && clickInside(event.target, commandOverlay)
+    && !clickInside(event.target, commandPanel)
+  ) {
+    setCommandPaletteOpen(false);
+  }
+
+  const setupTrigger = document.getElementById('setup-bucket-trigger');
+  const setupDropdown = document.getElementById('setup-bucket-dropdown');
+  if (
+    setupBucketPickerOpen
+    && !clickInside(event.target, setupTrigger)
+    && !clickInside(event.target, setupDropdown)
+  ) {
+    setSetupBucketPickerOpen(false);
+  }
+
+  const pathTrigger = document.getElementById('path-picker-trigger');
+  const pathDropdown = document.getElementById('path-picker-dropdown');
+  if (
+    pathPickerOpen
+    && !clickInside(event.target, pathTrigger)
+    && !clickInside(event.target, pathDropdown)
+  ) {
+    setPathPickerOpen(false);
+  }
+
+  const manualBtn = document.getElementById('path-manual-btn');
+  const manualRow = document.getElementById('path-manual-row');
+  if (
+    manualPathMode
+    && !clickInside(event.target, manualBtn)
+    && !clickInside(event.target, manualRow)
+  ) {
+    setManualPathMode(false);
+  }
+
+  const bucketTrigger = document.querySelector('.bucket-switch-trigger');
+  const bucketInline = document.getElementById('bucket-inline');
+  if (
+    bucketInline?.classList.contains('open')
+    && !clickInside(event.target, bucketTrigger)
+    && !clickInside(event.target, bucketInline)
+  ) {
+    hideBucketEditor();
+  }
+});
+
+document.addEventListener('keydown', event => {
+  if (resetConfirmOpen && (event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+    event.preventDefault();
+    return;
+  }
+
+  if (resetConfirmOpen && event.key === 'Escape') {
+    event.preventDefault();
+    setResetConfirmOpen(false);
+    return;
+  }
+
+  if (setupModalOpen && (event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+    event.preventDefault();
+    return;
+  }
+
+  if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+    event.preventDefault();
+    openTargetSettingsByShortcut();
+    return;
+  }
+
+  if (commandPaletteOpen) {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      setCommandPaletteOpen(false);
+      return;
+    }
+
+    const actions = commandPaletteVisibleActions.length
+      ? commandPaletteVisibleActions
+      : getVisibleCommandPaletteActions();
+    if (!actions.length) return;
+
+    if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      commandPaletteIndex = (commandPaletteIndex + 1) % actions.length;
+      renderCommandPalette();
+      return;
+    }
+
+    if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      commandPaletteIndex = (commandPaletteIndex - 1 + actions.length) % actions.length;
+      renderCommandPalette();
+      return;
+    }
+
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      runPaletteAction(commandPaletteIndex);
+      return;
+    }
+  }
+
+  if (event.key === 'Enter') {
+    const activeTag = String(document.activeElement?.tagName || '').toLowerCase();
+    if (activeTag !== 'input' && activeTag !== 'textarea' && nextActionKind !== 'uploading') {
+      event.preventDefault();
+      runNextAction();
+      return;
+    }
+
+    const setupDropdown = document.getElementById('setup-bucket-dropdown');
+    if (setupBucketPickerOpen && elementHasFocus(setupDropdown) && confirmBucketSelectionFromKeyboard('setup')) {
+      event.preventDefault();
+      return;
+    }
+
+    const bucketInline = document.getElementById('bucket-inline');
+    if (bucketInline?.classList.contains('open') && elementHasFocus(bucketInline) && confirmBucketSelectionFromKeyboard('inline')) {
+      event.preventDefault();
+      return;
+    }
+
+    const pathDropdown = document.getElementById('path-picker-dropdown');
+    if (pathPickerOpen && elementHasFocus(pathDropdown) && confirmPathSelectionFromKeyboard()) {
+      event.preventDefault();
+      return;
+    }
+  }
+
+  if (event.key === 'Escape') {
+    hideSetup();
+    setCommandPaletteOpen(false);
+    setSetupBucketPickerOpen(false);
+    setPathPickerOpen(false);
+    setManualPathMode(false);
+    hideBucketEditor();
+  }
+});
+
+async function startUpload() {
+  if (!files.length) return;
+  const targetPrefix = currentPrefixRaw();
+  const pathError = validatePathInput(targetPrefix);
+  if (pathError) {
+    setStatus(pathError);
+    return;
+  }
+  isUploading = true;
+  updateFlowStepState();
+  document.getElementById('btn-upload').disabled = true;
+  document.getElementById('progress-track').style.display = 'block';
+  document.getElementById('progress-fill').style.transform = 'scaleX(0)';
+  uploadLogs = [];
+  renderUploadLogs();
+  setLogExpanded(true);
+
+  let done = 0;
+  const total = files.length;
+
+  for (let i = 0; i < files.length; i++) {
+    const f = files[i];
+    const st = document.getElementById(`st-${i}`);
+    if (st) { st.textContent = '…'; st.style.color = 'var(--muted)'; }
+    setStatus(t('upload.progress', {
+      index: i + 1,
+      total,
+      path: targetPrefix || '/',
+      name: f.name,
+    }));
+
+    try {
+      const item = await uploadSingleFile(f, targetPrefix);
+      if (item?.ok) {
+        done++;
+        if (st) { st.textContent = '✓'; st.style.color = 'var(--success)'; }
+        addLog(f.name, item.url, true, item.key);
+      } else {
+        if (st) { st.textContent = '✗'; st.style.color = 'var(--danger)'; }
+        addLog(f.name, item?.error || t('upload.failed'), false, item?.key);
+      }
+    } catch(e) {
+      if (st) { st.textContent = '✗'; st.style.color = 'var(--danger)'; }
+      addLog(f.name, errorText(e, t('upload.failed')), false);
+    }
+
+    document.getElementById('progress-fill').style.transform = `scaleX(${Math.max(0, Math.min(1, (i + 1) / total))})`;
+  }
+
+  if (done > 0 && config?.hasOssConfig) {
+    upsertRecentPathBookmark({
+      bucket: config.bucket,
+      region: config.region,
+      prefix: targetPrefix,
+    });
+  }
+
+  setStatus(t('upload.done', { done, total }));
+  document.getElementById('btn-upload').disabled = false;
+  isUploading = false;
+  files = [];
+  render();
+  updateFlowStepState();
+}
+
+function setStatus(msg) {
+  document.getElementById('upload-status').textContent = msg;
+}
+
+function logItemMarkup(item) {
+  if (item.ok) {
+    const url = String(item.result || '');
+    return `<div class="log-item log-ok">
+      <span class="log-sym">✓</span>
+      <span class="log-name">${escapeHtml(item.name)}</span>
+      <span class="log-key">${escapeHtml(item.key || '')}</span>
+      <a class="log-url" href="${escapeHtml(url)}" target="_blank" rel="noreferrer">${escapeHtml(url)}</a>
+      <button class="copy-btn" data-copy="${encodeURIComponent(url)}">${escapeHtml(t('log.copy'))}</button>
+    </div>`;
+  }
+
+  return `<div class="log-item log-err">
+    <span class="log-sym">✗</span>
+    <span class="log-name">${escapeHtml(item.name)}</span>
+    <span class="log-key">${escapeHtml(item.key || '')}</span>
+    <span class="log-text">${escapeHtml(String(item.result || t('upload.failed')))}</span>
+    <span></span>
+  </div>`;
+}
+
+function bindCopyButtons(scope) {
+  if (!scope) return;
+  for (const btn of scope.querySelectorAll('.copy-btn[data-copy]')) {
+    btn.addEventListener('click', () => {
+      const value = decodeURIComponent(btn.dataset.copy || '');
+      copy(value, btn);
+    });
+  }
+}
+
+function renderUploadLogs() {
+  const summary = document.getElementById('log-summary');
+  const errorsEl = document.getElementById('log-list-errors');
+  const successEl = document.getElementById('log-list-success');
+  const successSummary = document.getElementById('log-success-summary');
+  const errorSummary = document.getElementById('log-error-summary');
+  const successGroup = document.getElementById('log-success-group');
+  const errorGroup = document.getElementById('log-error-group');
+  if (!summary || !errorsEl || !successEl || !successSummary || !errorSummary || !successGroup || !errorGroup) return;
+
+  const failures = uploadLogs.filter(item => !item.ok);
+  const successes = uploadLogs.filter(item => item.ok);
+
+  if (!uploadLogs.length) {
+    summary.textContent = t('log.none');
+  } else {
+    summary.textContent = t('log.summary', {
+      total: uploadLogs.length,
+      failed: failures.length,
+      ok: successes.length,
+    });
+  }
+
+  successSummary.textContent = t('log.success', { count: successes.length });
+  errorSummary.textContent = t('log.failed', { count: failures.length });
+
+  successEl.innerHTML = successes.length
+    ? successes.map(item => logItemMarkup(item)).join('')
+    : `<div class="bucket-list-state">${escapeHtml(t('log.success.empty'))}</div>`;
+  errorsEl.innerHTML = failures.length
+    ? failures.map(item => logItemMarkup(item)).join('')
+    : `<div class="bucket-list-state">${escapeHtml(t('log.failed.empty'))}</div>`;
+
+  successGroup.open = successes.length > 0;
+  errorGroup.open = failures.length > 0;
+
+  bindCopyButtons(errorsEl);
+  bindCopyButtons(successEl);
+}
+
+function addLog(name, urlOrErr, ok, key) {
+  uploadLogs.unshift({
+    name: String(name || ''),
+    result: String(urlOrErr || ''),
+    ok: Boolean(ok),
+    key: key || '',
+  });
+  renderUploadLogs();
+}
+
+function copy(url, btn) {
+  navigator.clipboard.writeText(url).then(() => {
+    btn.textContent = t('log.copied');
+    setTimeout(() => { btn.textContent = t('log.copy'); }, 1500);
+  });
+}
+
+init();
+</script>
+</body>
+</html>

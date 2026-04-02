@@ -1,0 +1,23 @@
+{
+  "name": "oss-uploader",
+  "version": "1.0.1",
+  "description": "OSS Drop local desktop uploader",
+  "private": true,
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "clean:build-cache": "rm -rf src-tauri/target",
+    "sync:tauri-ui": "mkdir -p tauri-ui && cp index.html tauri-ui/index.html",
+    "tauri:dev": "npm run sync:tauri-ui && tauri dev",
+    "tauri:build": "npm run sync:tauri-ui && tauri build"
+  },
+  "dependencies": {
+    "ali-oss": "^6.20.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "multer": "^1.4.5-lts.1"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.10.1"
+  }
+}
